@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="NialTheme" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:colorControlHighlight">#00000000</item>
+        <item name="android:textColorHighlight">#558B5CF6</item>
+        <item name="android:colorControlActivated">#8B5CF6</item>
+        <item name="android:colorAccent">#8B5CF6</item>
+    </style>
+</resources>

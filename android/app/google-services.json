@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "29463545510",
+    "project_id": "nial-ai",
+    "storage_bucket": "nial-ai.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:29463545510:android:3a143882391fa532105667",
+        "android_client_info": {
+          "package_name": "app.nial.ai"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF6Utt367rBHXE7b3-4YB0SYETfO4D5n0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

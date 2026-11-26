@@ -1,0 +1,161 @@
+--- original/lib/main.dart
++++ lib/main.dart
+@@ -18,6 +18,7 @@
+ import 'services/nial_media.dart';
+ import 'services/nial_profile.dart';
+ import 'services/nial_profile_card.dart';
++import 'services/nial_motion.dart';
+ 
+ import 'package:video_player/video_player.dart';
+ 
+@@ -1495,11 +1496,15 @@
+                   foregroundColor: e.favorite ? const Color(0xff584536) : null,
+                 ),
+                 onPressed: () => _toggleFavorite(e),
+-                icon: Icon(
+-                  e.favorite
+-                      ? Icons.bookmark_rounded
+-                      : Icons.bookmark_border_rounded,
+-                  size: 20,
++                icon: AnimatedSwitcher(
++                  duration: nialMotionDuration(context, 180),
++                  transitionBuilder: (child, animation) => ScaleTransition(
++                    scale: animation, child: child),
++                  child: Icon(
++                    e.favorite ? Icons.bookmark_rounded : Icons.bookmark_border_rounded,
++                    key: ValueKey(e.favorite),
++                    size: 20,
++                  ),
+                 ),
+               ),
+             ],
+@@ -1617,10 +1622,14 @@
+               ConstrainedBox(
+                 constraints: const BoxConstraints(minHeight: 58),
+                 child: Center(
+-                  child: Text(
+-                    prompts[question],
+-                    textAlign: TextAlign.center,
+-                    style: const TextStyle(fontSize: 19, height: 1.5),
++                  child: AnimatedSwitcher(
++                    duration: nialMotionDuration(context),
++                    child: Text(
++                      prompts[question],
++                      key: ValueKey(question),
++                      textAlign: TextAlign.center,
++                      style: const TextStyle(fontSize: 19, height: 1.5),
++                    ),
+                   ),
+                 ),
+               ),
+@@ -2043,10 +2052,12 @@
+       child: InkWell(
+         onTap: () {
+           FocusScope.of(context).unfocus();
+-          setState(() => page = index);
++          if (page != index) setState(() => page = index);
+         },
+         borderRadius: BorderRadius.circular(19),
+-        child: Container(
++        child: AnimatedContainer(
++          duration: nialMotionDuration(context),
++          curve: Curves.easeOutCubic,
+           padding: const EdgeInsets.symmetric(vertical: 9),
+           decoration: BoxDecoration(
+             color: page == index
+@@ -2057,7 +2068,12 @@
+           child: Column(
+             mainAxisSize: MainAxisSize.min,
+             children: [
+-              Icon(icon, size: 22),
++              AnimatedScale(
++                scale: page == index ? 1.10 : 1,
++                duration: nialMotionDuration(context),
++                curve: Curves.easeOutCubic,
++                child: Icon(icon, size: 22),
++              ),
+               const SizedBox(height: 5),
+               Text(text, style: const TextStyle(fontSize: 10)),
+             ],
+@@ -2100,7 +2116,8 @@
+               SizedBox(
+                 width: 48,
+                 height: 48,
+-                child: IconButton.filled(
++                child: NialPressFeedback(
++                  child: IconButton.filled(
+                   onPressed: () => edit(),
+                   tooltip: 'Создать запись',
+                   style: IconButton.styleFrom(
+@@ -2109,6 +2126,7 @@
+                     ),
+                   ),
+                   icon: const Icon(Icons.add, size: 28),
++                  ),
+                 ),
+               ),
+               const SizedBox(width: 5),
+@@ -2241,9 +2259,14 @@
+                           ],
+                         ),
+                         const SizedBox(height: 28),
+-                        if (page == 0) diary(),
+-                        if (page == 1) assistant(),
+-                        if (page == 2) settings(),
++                        NialEntrance(
++                          key: ValueKey(page),
++                          child: switch (page) {
++                            0 => diary(),
++                            1 => assistant(),
++                            _ => settings(),
++                          },
++                        ),
+                       ],
+                     ),
+                   ),
+--- original/lib/services/nial_profile_card.dart
++++ lib/services/nial_profile_card.dart
+@@ -4,6 +4,7 @@
+ import 'package:material_ui/material_ui.dart';
+ import 'package:file_picker/file_picker.dart';
+ import 'nial_profile.dart';
++import 'nial_motion.dart';
+ 
+ class NialProfileCard extends StatefulWidget {
+   const NialProfileCard({super.key});
+@@ -35,7 +36,11 @@
+       final saved = await showDialog<NialProfile>(
+         context: context,
+         barrierDismissible: false,
+-        builder: (_) => _NialProfileEditor(initial: _profile!),
++        builder: (_) => NialEntrance(
++          offset: const Offset(0, .025),
++          milliseconds: 200,
++          child: _NialProfileEditor(initial: _profile!),
++        ),
+       );
+       if (mounted && saved != null) setState(() => _profile = saved);
+     } finally {
+@@ -96,11 +101,17 @@
+       ? Icon(Icons.person_outline_rounded, size: 34, color: colors.onPrimaryContainer)
+       : Text(profile.name.characters.first.toUpperCase(),
+           style: TextStyle(fontSize: 28, color: colors.onPrimaryContainer)));
+-    return ClipOval(child: SizedBox(width: 76, height: 76,
+-      child: ColoredBox(color: colors.primaryContainer,
+-        child: profile.avatar == null ? fallback : Image.memory(
+-          profile.avatarBytes!, width: 76, height: 76, fit: BoxFit.cover,
+-          errorBuilder: (_, _, _) => fallback))));
++    return AnimatedSwitcher(
++      duration: nialMotionDuration(context),
++      child: ClipOval(
++        key: ValueKey((profile.avatar, profile.name)),
++        child: SizedBox(width: 76, height: 76,
++          child: ColoredBox(color: colors.primaryContainer,
++            child: profile.avatar == null ? fallback : Image.memory(
++              profile.avatarBytes!, width: 76, height: 76, fit: BoxFit.cover,
++              errorBuilder: (_, _, _) => fallback))),
++      ),
++    );
+   }
+ }
+ 

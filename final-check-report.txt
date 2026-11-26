@@ -1,0 +1,13 @@
+﻿PASS: server health
+PASS: missing and invalid tokens rejected
+PASS: real Firebase anonymous session created
+PASS: real Firebase token accepted by production server
+PASS: guest token cannot access page or image endpoint
+PASS: one authenticated GigaChat request returned text
+PASS: Android release build
+PASS: signed with existing nial-release alias; signature and alignment verified
+APK SHA256: 8F194AFBCF7D1B7707A742368212F94E6ED93C5538419476DADD2CAA873D5E68
+APK: C:\dev\nial_ai\releses\20261125-073506-8da449\Nial-Ai-signed.apk
+NOT TESTED: app UI, device lifecycle, app-side Firebase session, updates over an installed APK, memory behavior, all modes, abuse resistance and shared spending cap.
+This is a signed build with backend smoke checks, NOT certification of complete production readiness.
+Temporary Firebase test account deleted.

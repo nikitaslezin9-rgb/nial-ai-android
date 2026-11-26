@@ -1,0 +1,194 @@
+﻿
+  MainActivity.java:16:import android.widget.*;
+  MainActivity.java:17:import org.json.JSONArray;
+> MainActivity.java:18:import org.json.JSONObject;
+  MainActivity.java:19:import javax.net.ssl.HttpsURLConnection;
+  MainActivity.java:20:import java.io.*;
+  MainActivity.java:21:import java.net.URL;
+  MainActivity.java:22:import java.nio.charset.StandardCharsets;
+  MainActivity.java:23:
+> MainActivity.java:24:public class MainActivity extends Activity {
+  MainActivity.java:25:    // NIAL_VOICE_V1
+  MainActivity.java:26:    private NialVoice nialVoice;
+  MainActivity.java:27:
+  MainActivity.java:28:    private static final String BASE =
+  MainActivity.java:29:        "https://steady-wisp-637e8f.netlify.app";
+  MainActivity.java:30:
+> MainActivity.java:31:    private final String[] ids = {"talk", "neo", "nio"};
+  MainActivity.java:32:    private final String[] names = {"Nial", "Neo", "Nio"};
+  MainActivity.java:33:
+  MainActivity.java:34:    private int bg = Color.rgb(245,244,250);
+  MainActivity.java:35:    private int purple = Color.rgb(106,104,223);
+  MainActivity.java:117:    private boolean cosmeticImeVisible;
+  MainActivity.java:118:
+> MainActivity.java:119:    private void showCosmeticHistory() {
+  MainActivity.java:120:        if (busy) {
+  MainActivity.java:121:            Toast.makeText(this, "Дождись ответа Nial.", Toast.LENGTH_SHORT).show();
+  MainActivity.java:122:            return;
+  MainActivity.java:123:        }
+  MainActivity.java:127:            String preview = "Пока нет сообщений";
+  MainActivity.java:128:            if (history != null && history.length() > 0) {
+> MainActivity.java:129:                JSONObject last = history.optJSONObject(history.length()-1);
+  MainActivity.java:130:                if (last != null) {
+  MainActivity.java:131:                    preview = last.optString("content", "").replace('\n',' ').trim();
+  MainActivity.java:132:                    if (preview.length() > 72) preview = preview.substring(0,72) + "…";
+  MainActivity.java:133:                }
+  MainActivity.java:136:        }
+  MainActivity.java:137:        AlertDialog dialog = dialogBuilder().setTitle("История чатов")
+> MainActivity.java:138:            .setItems(entries, (d, which) -> enterAgent(which))
+  MainActivity.java:139:            .setNegativeButton("Закрыть", null).create();
+  MainActivity.java:140:        dialog.show();
+  MainActivity.java:141:    }
+  MainActivity.java:142:
+  MainActivity.java:167:    }
+  MainActivity.java:168:
+> MainActivity.java:169:    private void showScreen(String name) {
+  MainActivity.java:170:        if (chatScreen != null && input != null) {
+  MainActivity.java:171:            drafts[active] = input.getText().toString();
+  MainActivity.java:172:            persist();
+  MainActivity.java:173:        }
+  MainActivity.java:194:    }
+  MainActivity.java:195:
+> MainActivity.java:196:    private void enterAgent(int index) {
+> MainActivity.java:197:        switchAgent(index);
+  MainActivity.java:198:        showScreen("chat");
+  MainActivity.java:199:    }
+  MainActivity.java:200:
+> MainActivity.java:201:    private void buildScreen() {
+  MainActivity.java:202:        // NIAL_COSMETIC_V1
+  MainActivity.java:203:        NialUi.accent = purple;
+  MainActivity.java:204:        NialUi.surface = surface;
+  MainActivity.java:205:        NialUi.ink = ink;
+  MainActivity.java:449:    }
+  MainActivity.java:450:
+> MainActivity.java:451:    private class NialDialogBuilder extends AlertDialog.Builder {
+  MainActivity.java:452:        private CharSequence caption;
+  MainActivity.java:453:        private CharSequence description;
+  MainActivity.java:454:        private android.view.View editor;
+  MainActivity.java:455:        private CharSequence[] options;
+  MainActivity.java:640:    }
+  MainActivity.java:641:
+> MainActivity.java:642:    private void showAppearance() {
+  MainActivity.java:643:        if (busy) {
+  MainActivity.java:644:            Toast.makeText(this, "Дождись ответа, чтобы изменить оформление",
+  MainActivity.java:645:                Toast.LENGTH_SHORT).show();
+  MainActivity.java:646:            return;
+  MainActivity.java:695:    }
+  MainActivity.java:696:
+> MainActivity.java:697:    private void buildWelcome() {
+  MainActivity.java:698:        ScrollView page = new ScrollView(this);
+  MainActivity.java:699:        page.setFillViewport(true);
+  MainActivity.java:700:        LinearLayout content = column();
+  MainActivity.java:701:        content.setPadding(0, dp(18), 0, dp(12));
+  MainActivity.java:751:    }
+  MainActivity.java:752:
+> MainActivity.java:753:    private void buildHome() {
+  MainActivity.java:754:        homeScreen.setGravity(Gravity.CENTER_HORIZONTAL);
+  MainActivity.java:755:        android.widget.FrameLayout stage = new android.widget.FrameLayout(this);
+  MainActivity.java:756:        OrbView assistant = new OrbView();
+  MainActivity.java:757:        homeOrb = assistant;
+  MainActivity.java:773:        });
+  MainActivity.java:774:        homeScreen.addView(stage, new LinearLayout.LayoutParams(-1, 0, 1));
+> MainActivity.java:775:        Button talk = primary("Общаться");
+> MainActivity.java:776:        talk.setTextSize(16);
+> MainActivity.java:777:        talk.setOnClickListener(v -> enterAgent(0));
+> MainActivity.java:778:        NialUi.press(talk);
+  MainActivity.java:779:        LinearLayout.LayoutParams tp = new LinearLayout.LayoutParams(-1, dp(52));
+  MainActivity.java:780:        tp.setMargins(dp(8), dp(8), dp(8), dp(12));
+> MainActivity.java:781:        homeScreen.addView(talk, tp);
+  MainActivity.java:782:    }
+  MainActivity.java:783:
+> MainActivity.java:784:    private void buildChat() {
+  MainActivity.java:785:        LinearLayout header = new LinearLayout(this);
+  MainActivity.java:786:        header.setGravity(Gravity.CENTER_VERTICAL);
+  MainActivity.java:787:
+  MainActivity.java:788:        Button back = button("‹");
+  MainActivity.java:819:            tp.setMargins(dp(2), 0, dp(2), 0);
+  MainActivity.java:820:            tabRow.addView(tabs[i], tp);
+> MainActivity.java:821:            tabs[i].setOnClickListener(v -> switchAgent(index));
+  MainActivity.java:822:        }
+  MainActivity.java:823:        chatScreen.addView(tabRow);
+  MainActivity.java:824:
+  MainActivity.java:825:        chatStage = new android.widget.FrameLayout(this);
+  MainActivity.java:876:        NialUi.icon(send, "send", purple, Color.WHITE);
+  MainActivity.java:877:        send.setContentDescription("Отправить сообщение");
+> MainActivity.java:878:        send.setOnClickListener(v -> sendMessage());
+  MainActivity.java:879:        compose.addView(send,
+  MainActivity.java:880:            new LinearLayout.LayoutParams(dp(48), dp(48)));
+  MainActivity.java:881:        if (nialVoice == null) nialVoice = new NialVoice(this);
+> MainActivity.java:882:        nialVoice.bind(compose, input, () -> sendMessage(), () -> busy);
+  MainActivity.java:883:        nialCompose = compose;
+  MainActivity.java:884:        chatScreen.addView(compose);
+  MainActivity.java:885:
+  MainActivity.java:886:        TextView footer = text(
+  MainActivity.java:989:    }
+  MainActivity.java:990:
+> MainActivity.java:991:    private class OrbView extends android.view.View {
+  MainActivity.java:992:        private final android.graphics.Paint paint =
+  MainActivity.java:993:            new android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG);
+  MainActivity.java:994:        private final android.graphics.Path star = new android.graphics.Path();
+  MainActivity.java:995:        private final long started = android.os.SystemClock.uptimeMillis();
+  MainActivity.java:1224:        }
+  MainActivity.java:1225:    }
+> MainActivity.java:1226:    private void switchAgent(int index) {
+  MainActivity.java:1227:        drafts[active] = input.getText().toString();
+  MainActivity.java:1228:        active = index;
+  MainActivity.java:1229:        persist();
+  MainActivity.java:1230:        render();
+  MainActivity.java:1253:
+  MainActivity.java:1254:        for (int i = 0; i < history.length(); i++) {
+> MainActivity.java:1255:            JSONObject item = history.optJSONObject(i);
+  MainActivity.java:1256:            if (item == null) continue;
+  MainActivity.java:1257:            boolean user = "user".equals(item.optString("role"));
+  MainActivity.java:1258:
+  MainActivity.java:1259:            LinearLayout row = new LinearLayout(this);
+  MainActivity.java:1373:    }
+  MainActivity.java:1374:
+> MainActivity.java:1375:    private JSONObject message(String role, String content) throws Exception {
+> MainActivity.java:1376:        return new JSONObject().put("role", role).put("content", content);
+  MainActivity.java:1377:    }
+  MainActivity.java:1378:
+> MainActivity.java:1379:    private void sendMessage() {
+  MainActivity.java:1380:        sendGuestMessage();
+  MainActivity.java:1381:    }
+  MainActivity.java:1382:
+  MainActivity.java:1383:    private void sendGuestMessage() {
+  MainActivity.java:1409:            for (int i = Math.max(0, history.length() - 24);
+  MainActivity.java:1410:                    i < history.length(); i++) {
+> MainActivity.java:1411:                JSONObject item = history.getJSONObject(i);
+  MainActivity.java:1412:                String content = item.getString("content");
+  MainActivity.java:1413:                outgoing.put(message(
+  MainActivity.java:1414:                    item.getString("role"),
+  MainActivity.java:1415:                    content.substring(0, Math.min(2500, content.length()))));
+  MainActivity.java:1476:                });
+  MainActivity.java:1477:
+> MainActivity.java:1478:                JSONObject payload = new JSONObject()
+  MainActivity.java:1479:                    .put("messages", outgoing)
+> MainActivity.java:1480:                    .put("agent", ids[index])
+  MainActivity.java:1481:                    .put("name", "Nial")
+  MainActivity.java:1482:                    .put("memory", memorySnapshot)
+  MainActivity.java:1483:                    .put("task", "chat");
+  MainActivity.java:1484:
+  MainActivity.java:1524:                }
+  MainActivity.java:1525:
+> MainActivity.java:1526:                JSONObject data;
+  MainActivity.java:1527:                try {
+> MainActivity.java:1528:                    data = new JSONObject(raw);
+  MainActivity.java:1529:                } catch (Exception e) {
+  MainActivity.java:1530:                    throw new IOException(
+  MainActivity.java:1531:                        "Сервер вернул неожиданный формат. HTTP " + code);
+  MainActivity.java:1532:                }
+  MainActivity.java:1559:            }
+  MainActivity.java:1560:
+> MainActivity.java:1561:            final String rawAnswer = answer; // NIAL_AGENT_V2
+> MainActivity.java:1562:            final String result = AgentActions.stripActions(answer);
+  MainActivity.java:1563:            final String error = failure;
+  MainActivity.java:1564:            if (failure == null && rawAnswer != null) {
+  MainActivity.java:1565:                runOnUiThread(() -> {
+> MainActivity.java:1566:                    String note = AgentActions.execute(MainActivity.this, rawAnswer);
+  MainActivity.java:1567:                    if (!note.isEmpty()) {
+  MainActivity.java:1568:                        android.widget.Toast.makeText(MainActivity.this, note,
+  MainActivity.java:1569:                            android.widget.Toast.LENGTH_LONG).show();
+  MainActivity.java:1570:                    }
+
+

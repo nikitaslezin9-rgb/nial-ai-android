@@ -1,0 +1,13 @@
+.env
+.env.*
+*.bak
+
+*.credential
+
+*.jks
+*.keystore
+keystore.properties
+local.properties
+build/
+.gradle/
+.idea/

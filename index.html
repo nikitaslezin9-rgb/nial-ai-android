@@ -1,0 +1,2516 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f5f4fa">
+<title>Nial AI</title>
+<style>
+:root{
+  color-scheme:light;
+  --bg:#f5f4fa;--ink:#2e2c2d;--muted:#898390;
+  --purple:#6a68df;--line:#e8e3ef;--paper:#fefefe
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI",Arial,sans-serif}
+button,textarea{font:inherit}
+button{cursor:pointer;color:inherit;transition:transform .2s,background .2s,box-shadow .2s}
+button:hover:not(:disabled){transform:translateY(-2px)}
+button:active:not(:disabled){transform:scale(.97)}
+button:disabled{opacity:.45;cursor:wait}
+button:focus-visible,textarea:focus-visible{outline:3px solid #b5a7f6;outline-offset:4px}
+.layout{max-width:1480px;margin:auto;display:grid;grid-template-columns:225px minmax(0,1fr);min-height:100dvh}
+aside{padding:35px 22px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:28px}
+.brand{display:flex;align-items:center;gap:10px;font-size:23px;font-weight:750;letter-spacing:-1px}
+.mark{display:grid;place-items:center;width:38px;height:38px;background:var(--purple);border-radius:14px;color:white}
+.eyebrow{text-transform:uppercase;letter-spacing:2px;font-size:10px;color:var(--muted)}
+nav{display:grid;gap:8px}
+nav button{background:none;border:0;text-align:left;padding:12px 14px;border-radius:14px;color:var(--muted)}
+nav button.active{background:#eae6fa;color:var(--purple)}
+.side-bottom{margin-top:auto;font-size:11px;color:var(--muted)}
+main{min-width:0;padding:30px 45px 18px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:25px}
+.memory-button{border:1px solid var(--line);border-radius:20px;background:white;padding:8px 15px;font-size:12px}
+.view{max-width:920px;margin:auto;animation:screenIn .45s both}
+h1,h2,h3,p{margin:0}
+h1,h2,h3{line-height:1.18;letter-spacing:-1px}
+h2{font-size:34px}
+.sub{color:var(--muted);margin-top:10px;font-size:14px}
+.primary{border:0;border-radius:15px;background:var(--purple);color:white;padding:13px 21px;font-weight:600}
+.welcome{display:grid;grid-template-columns:1fr 1fr;align-items:center;min-height:calc(100dvh - 125px);gap:30px;padding-bottom:40px}
+.welcome h1{font-size:clamp(42px,5vw,66px);letter-spacing:-3px;font-weight:650}
+.welcome em{color:var(--purple);font-style:normal}
+.welcome .sub{max-width:330px;margin-top:23px}
+.welcome .primary{margin-top:28px;background:white;color:var(--ink);min-width:230px;display:flex;justify-content:space-between;gap:35px}
+.art{min-height:350px;position:relative;display:grid;place-items:center}
+.art:after{content:"";position:absolute;width:170px;height:25px;top:calc(50% + 130px);background:linear-gradient(90deg,#aa8cea,#efb195);filter:blur(17px);opacity:.55;border-radius:50%;animation:shadow 5s ease-in-out infinite}
+.greeting{position:absolute;right:0;top:35px;background:white;border-radius:20px 20px 20px 4px;padding:12px 20px;transform:rotate(5deg);font-size:14px;animation:screenIn .7s .2s both}
+.mascot{--size:210px;width:var(--size);height:var(--size);position:relative;flex-shrink:0;animation:float 5s ease-in-out infinite}
+.body-orb{position:absolute;inset:0;border-radius:50%;background:radial-gradient(ellipse at 32% 18%,#f5b5ed,transparent 42%),radial-gradient(ellipse at 50% 105%,#ffe4a9,#efa982 22%,transparent 52%),linear-gradient(145deg,#c59bf1,#a06cde 55%,#d7a0cf);box-shadow:inset -12px -10px 25px #7742b222,inset 5px 8px 20px #ffffff55;transition:filter .7s,box-shadow .7s}
+.face{position:absolute;inset:0;transition:transform .5s}
+.eye{position:absolute;top:41%;width:7%;height:15%;background:white;border-radius:50%;animation:blink 6.5s infinite;transform-origin:center;transition:height .3s,top .3s}
+.eye.left{left:35%}.eye.right{right:35%}
+.mouth{position:absolute;width:13%;height:6%;left:43.5%;top:62%;border-bottom:3px solid #ffffffc9;border-radius:0 0 50% 50%;opacity:.7;transition:all .4s}
+.mascot[data-mood="attentive"] .face{transform:translate(4%,3%) rotate(-5deg)}
+.mascot[data-mood="attentive"] .body-orb{filter:saturate(1.15)}
+.mascot[data-mood="thinking"]{animation:ponder 2.7s ease-in-out infinite}
+.mascot[data-mood="thinking"] .face{transform:translateY(-7%) rotate(8deg)}
+.mascot[data-mood="thinking"] .body-orb{animation:glow 2s ease-in-out infinite}
+.mascot[data-mood="thinking"] .mouth{width:6%;left:47%;border-bottom:0;border:2px solid white;border-radius:50%;height:6%}
+.mascot[data-mood="happy"]{animation:happy .75s ease-in-out 2,float 5s 1.5s ease-in-out infinite}
+.mascot[data-mood="happy"] .eye{height:9%;top:43%;border-radius:50% 50% 30% 30%}
+.mascot[data-mood="happy"] .mouth{height:9%;width:17%;left:41.5%}
+.mascot[data-mood="error"] .face{transform:rotate(-10deg)}
+.mascot[data-mood="error"] .mouth{border-bottom:0;border-top:2px solid white;border-radius:50% 50% 0 0;top:65%}
+.mascot[data-agent="code"] .body-orb{filter:hue-rotate(12deg)}
+.mascot[data-agent="learn"] .body-orb{filter:hue-rotate(-12deg)}
+.hero{margin-top:27px;border:1px solid #e1d8ef;background:#eae4f7;border-radius:28px;display:flex;align-items:center;justify-content:space-between;padding:28px 34px;gap:20px;overflow:hidden}
+.hero h3{font-size:29px}
+.tag{display:inline-block;background:#ffffffb5;border-radius:20px;padding:5px 11px;color:#80738f;font-size:11px;margin-bottom:14px}
+.hero p{font-size:13px;color:#86768f;margin:12px 0 18px}
+.hero .mascot{--size:150px;margin-right:25px}
+.section-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:29px 0 16px}
+.section-head h3{font-size:19px;letter-spacing:-.5px}
+.section-head small{font-size:11px;color:var(--muted)}
+.tasks{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.task{border:1px solid #eee9f3;border-radius:22px;background:white;text-align:left;padding:22px;animation:screenIn .5s both}
+.task:nth-child(2){animation-delay:.07s}
+.task:nth-child(3){animation-delay:.14s}
+.task:hover{box-shadow:0 14px 30px #72609212}
+.task-icon{display:grid;place-items:center;width:41px;height:41px;border-radius:14px;background:#eee8fc;color:var(--purple);font-size:18px;margin-bottom:24px}
+.task:nth-child(2) .task-icon{background:#fff0e5;color:#c99774}
+.task:nth-child(3) .task-icon{background:#e7f1e9;color:#79a58b}
+.task strong{display:block;font-size:14px;font-weight:600}
+.task small{display:block;color:var(--muted);font-size:11px;margin-top:7px}
+.info{padding:19px 21px;border:1px dashed #dcd5e6;border-radius:18px;color:var(--muted);font-size:12px}
+.dialog-view{height:calc(100dvh - 112px);min-height:380px;display:flex;flex-direction:column}
+.chat-head{display:flex;align-items:center;gap:13px;border-bottom:1px solid var(--line);padding-bottom:17px}
+.back{border:1px solid var(--line);background:white;width:38px;height:38px;border-radius:13px;font-size:24px}
+.chat-head .mascot{--size:43px}
+.chat-head .mouth{border-width:1px}
+.chat-heading{flex:1;min-width:0}
+.chat-heading h2{font-size:18px;letter-spacing:-.5px}
+.chat-heading p{font-size:11px;color:var(--muted);margin-top:4px}
+.clear{border:0;background:none;color:var(--purple);font-size:12px;padding:8px}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;padding:15px 0 5px}
+.tabs button{border:1px solid var(--line);background:transparent;border-radius:25px;padding:6px 13px;font-size:11px;color:var(--muted)}
+.tabs button.active{background:var(--purple);color:white;border-color:var(--purple)}
+.messages{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:22px 5px;scrollbar-width:thin;scrollbar-color:#d2c8e4 transparent}
+.empty{text-align:center;padding:45px 15px;color:var(--muted);font-size:13px;animation:screenIn .5s both}
+.empty .mascot{--size:95px;margin:0 auto 22px}
+.empty h3{color:var(--ink);font-size:23px;margin-bottom:10px}
+.message{display:flex;gap:10px;margin-bottom:24px}
+.message.fresh{animation:messageIn .35s both}
+.message.user{justify-content:flex-end}
+.message-content{min-width:0;max-width:88%}
+.meta{font-size:10px;color:var(--muted);margin-bottom:6px}
+.user .meta{text-align:right}
+.bubble{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75;font-size:14px}
+.user .bubble{background:white;border:1px solid #eee9f2;border-radius:18px 18px 5px 18px;padding:12px 17px}
+.assistant-label{width:27px;height:27px;flex-shrink:0;border-radius:10px;display:grid;place-items:center;background:#e9e2f6;color:var(--purple);font-size:12px;margin-top:2px}
+.status{min-height:28px;padding:5px 9px;color:var(--purple);font-size:12px;overflow-wrap:anywhere}
+.status.error{color:#b35269}
+.input-wrap{display:flex;align-items:flex-end;gap:12px;background:white;border:1px solid var(--line);border-radius:23px;padding:10px 11px 10px 20px;transition:box-shadow .3s,border-color .3s}
+.input-wrap:focus-within{border-color:#b9a8ec;box-shadow:0 0 0 4px #b9a8ec15}
+#input{flex:1;min-width:0;width:100%;resize:none;max-height:145px;border:0;background:transparent;outline:none;line-height:1.5;padding:9px 0;color:var(--ink)}
+#input:focus-visible{outline:none}
+textarea::placeholder{color:#aaa1b2}
+.send{width:41px;height:41px;border-radius:50%;border:0;background:var(--purple);color:white;font-size:23px;flex-shrink:0}
+.footer-note{text-align:center;color:#aaa1b2;font-size:10px;margin-top:9px}
+.notice{max-width:920px;margin:0 auto 15px;border-radius:12px;background:#fff0e4;color:#875d46;padding:10px 15px;font-size:12px}
+dialog{border:1px solid var(--line);border-radius:25px;padding:26px;background:var(--bg);color:var(--ink);width:min(560px,calc(100% - 30px));box-shadow:0 30px 100px #30204430}
+dialog::backdrop{background:#30204455;backdrop-filter:blur(5px)}
+dialog h2{font-size:24px}
+dialog p{font-size:13px;color:var(--muted);margin:12px 0}
+#memoryText{width:100%;min-height:200px;resize:vertical;border:1px solid var(--line);border-radius:16px;padding:15px;background:white;color:var(--ink)}
+.modal-actions{display:flex;justify-content:flex-end;gap:12px;margin-top:16px}
+.secondary{background:white;border:1px solid var(--line);border-radius:15px;padding:11px 18px}
+@keyframes float{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-10px) rotate(2deg)}}
+@keyframes blink{0%,42%,46%,100%{transform:scaleY(1)}44%{transform:scaleY(.1)}}
+@keyframes shadow{0%,100%{transform:scaleX(1);opacity:.5}50%{transform:scaleX(.85);opacity:.3}}
+@keyframes ponder{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
+@keyframes glow{0%,100%{box-shadow:0 0 0 0 #ad8ce522}50%{box-shadow:0 0 0 15px #ad8ce50a,0 0 40px #b58de544}}
+@keyframes happy{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-12px) scale(1.03,.98)}70%{transform:translateY(2px) scale(.98,1.02)}}
+@keyframes screenIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes messageIn{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:translateY(0)}}
+@media(max-width:1050px){
+.layout{grid-template-columns:180px minmax(0,1fr)}
+aside{padding:28px 15px}main{padding:26px}
+.welcome h1{font-size:45px}.art .mascot{--size:170px}
+.hero{padding:25px}.hero .mascot{--size:125px;margin-right:0}
+}
+@media(max-width:740px){
+.layout{display:block}aside{display:none}main{padding:20px 18px 12px}
+.top{margin-bottom:22px}.top .eyebrow{font-size:9px;letter-spacing:1px}
+.welcome{grid-template-columns:1fr;gap:0;padding:10px 0 25px;min-height:calc(100dvh - 105px)}
+.welcome-copy{display:contents}
+.welcome h1{grid-row:1;font-size:44px;letter-spacing:-2px}
+.welcome .art{grid-row:2;min-height:270px}
+.welcome .sub{grid-row:3;margin-top:0}
+.welcome .primary{grid-row:4;width:100%;margin-top:22px}
+.art:after{top:calc(50% + 100px);width:140px}
+.greeting{right:8%;top:18px;font-size:12px}
+h2{font-size:29px}.hero{padding:23px 20px;gap:8px}
+.hero h3{font-size:24px}.hero .mascot{--size:105px;margin-right:-7px}
+.hero p{font-size:11px}.tag{font-size:10px}
+.tasks{gap:9px}.task{padding:17px 11px;border-radius:18px}
+.task strong{font-size:12px}.task small{font-size:10px}
+.task-icon{margin-bottom:20px}
+.section-head small{font-size:9px}
+.dialog-view{height:calc(100dvh - 104px)}
+.chat-head{gap:9px}.chat-head .mascot{--size:36px}
+.chat-heading h2{font-size:16px}.chat-heading p{font-size:10px}
+.clear{font-size:10px}.message-content{max-width:89%}
+.footer-note{font-size:9px}.memory-button{font-size:11px;padding:7px 12px}
+}
+@media(prefers-reduced-motion:reduce){
+*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand"><span class="mark">n</span>Nial AI</div>
+  <div class="eyebrow">Твоё пространство</div>
+  <nav aria-label="Навигация">
+    <button type="button" id="navHome">Главная</button>
+    <button type="button" data-agent="talk">Собеседник</button>
+    <button type="button" data-agent="code">Программист</button>
+    <button type="button" data-agent="learn">Наставник</button>
+  </nav>
+  <div class="side-bottom">Один Nial. Три направления.<br>Разные диалоги, общая память.<br><br>На базе GigaChat</div>
+</aside>
+
+<main>
+  <header class="top">
+    <div class="eyebrow">Nial AI / Personal assistant</div>
+    <button class="memory-button" type="button" id="memoryOpen">Общая память</button>
+  </header>
+
+  <div class="notice" id="notice" role="alert" hidden></div>
+
+  <section class="view welcome" id="welcome">
+    <div class="welcome-copy">
+      <h1>Твой <em>умный<br>помощник</em><br>на каждый день.</h1>
+      <p class="sub">Для больших идей, маленьких вопросов и разговоров обо всём.</p>
+      <button type="button" class="primary" id="start">Начать знакомство <span aria-hidden="true">→</span></button>
+    </div>
+    <div class="art" aria-hidden="true">
+      <div class="mascot" data-mood="happy">
+        <div class="body-orb"></div>
+        <div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div>
+      </div>
+      <div class="greeting">Привет, я Nial!</div>
+    </div>
+  </section>
+
+  <section class="view" id="home" hidden>
+    <h2 id="personalGreeting">Привет!</h2>
+    <p class="sub">Что сегодня придумаем вместе?</p>
+    <div class="hero">
+      <div>
+        <span class="tag">Твой AI-помощник</span>
+        <h3>Любая идея начинается<br>с разговора.</h3>
+        <p>Выбери, чем займёмся. Я рядом.</p>
+        <button type="button" class="primary" data-agent="talk">Давай поговорим →</button>
+      </div>
+      <div class="mascot" data-mood="idle" aria-hidden="true">
+        <div class="body-orb"></div>
+        <div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div>
+      </div>
+    </div>
+
+    <div class="section-head"><h3>С чего начнём?</h3><small>У каждого своя переписка</small></div>
+    <div class="tasks">
+      <button class="task" type="button" data-agent="talk">
+        <span class="task-icon" aria-hidden="true">…</span>
+        <strong>Поговорить</strong>
+        <small>Твой собеседник</small>
+        <small id="count-talk">Сообщений: 0</small>
+      </button>
+      <button class="task" type="button" data-agent="code">
+        <span class="task-icon" aria-hidden="true">&lt;/&gt;</span>
+        <strong>Помочь с кодом</strong>
+        <small>Твой программист</small>
+        <small id="count-code">Сообщений: 0</small>
+      </button>
+      <button class="task" type="button" data-agent="learn">
+        <span class="task-icon" aria-hidden="true">Aa</span>
+        <strong>Объяснить тему</strong>
+        <small>Твой наставник</small>
+        <small id="count-learn">Сообщений: 0</small>
+      </button>
+    </div>
+
+    <div class="section-head"><h3>Общая память</h3><small>Ты решаешь, что помнить</small></div>
+    <div class="info" id="memoryPreview"></div>
+    <p class="sub" style="font-size:11px;margin:17px 0">
+      История хранится в этом браузере. Открывай один и тот же адрес сайта.
+      Переписки и память не зашифрованы. Не сохраняй в них пароли и ключи.
+    </p>
+  </section>
+
+  <section class="view dialog-view" id="dialogView" hidden>
+    <header class="chat-head">
+      <button class="back" type="button" id="back" aria-label="На главную">‹</button>
+      <div class="mascot" id="chatMascot" data-mood="idle" aria-hidden="true">
+        <div class="body-orb"></div>
+        <div class="face"><i class="eye left"></i><i class="eye right"></i><i class="mouth"></i></div>
+      </div>
+      <div class="chat-heading">
+        <h2 id="agentTitle">Собеседник</h2>
+        <p id="agentSubtitle">Nial AI · На базе GigaChat</p>
+      </div>
+      <button class="clear" type="button" id="clearChat">Очистить диалог</button>
+    </header>
+
+    <div class="tabs" aria-label="Выбор агента">
+      <button type="button" data-agent="talk">Собеседник</button>
+      <button type="button" data-agent="code">Программист</button>
+      <button type="button" data-agent="learn">Наставник</button>
+    </div>
+
+    <div class="messages" id="chat" role="log" aria-label="Сообщения"></div>
+
+    <div class="status" id="status" role="status" aria-live="polite"></div>
+    <form class="input-wrap" id="form">
+      <textarea id="input" rows="1" maxlength="5000" required aria-label="Сообщение" placeholder="Напиши сообщение…"></textarea>
+      <button class="send" type="submit" id="send" aria-label="Отправить">↑</button>
+    </form>
+    <p class="footer-note">AI может ошибаться · Контекст передаётся GigaChat · Enter — отправить, Shift+Enter — новая строка</p>
+  </section>
+</main>
+</div>
+
+<dialog id="memoryDialog" aria-labelledby="memoryTitle">
+  <h2 id="memoryTitle">Общая память Nial</h2>
+  <p>Эти заметки получают все три агента при следующем сообщении. Сохраняй здесь важные факты и предпочтения. Автоматически вся переписка сюда не копируется.</p>
+  <textarea id="memoryText" maxlength="2500" aria-label="Общая память"></textarea>
+  <div class="modal-actions">
+    <button type="button" class="secondary" id="memoryCancel">Отмена</button>
+    <button type="button" class="primary" id="memorySave">Сохранить</button>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+
+const $ = selector => document.querySelector(selector);
+const KEY = 'nial.ai.workspace.v1';
+
+const agents = {
+  talk: {
+    name: 'Собеседник',
+    subtitle: 'Поговорим о том, что на уме',
+    intro: 'Я рядом. О чём поговорим?',
+    role: 'Ты Nial AI в роли внимательного собеседника. Общайся тепло и естественно, без навязчивой фамильярности. Не изображай реальные чувства и не заявляй о несуществующих возможностях.'
+  },
+  code: {
+    name: 'Программист',
+    subtitle: 'От идеи до рабочего решения',
+    intro: 'Какую задачу разберём?',
+    role: 'Ты Nial AI в роли помощника по программированию. Давай точные решения, объясняй изменения короткими шагами. Учитывай среду пользователя. Не предлагай установку программ без согласия. Не проси присылать API-ключи. Не утверждай, что запускал код, если не запускал.'
+  },
+  learn: {
+    name: 'Наставник',
+    subtitle: 'Сложное становится понятнее',
+    intro: 'Что хочешь понять сегодня?',
+    role: 'Ты Nial AI в роли терпеливого наставника. Объясняй простыми словами, приводи примеры и отделяй факты от предположений. Подстраивай глубину под вопрос, не перегружай ответ.'
+  }
+};
+
+function freshState() {
+  return {
+    onboarded: false,
+    active: 'talk',
+    memory: '',
+    chats: { talk: [], code: [], learn: [] },
+    drafts: { talk: '', code: '', learn: '' }
+  };
+}
+
+let state = freshState();
+let storageOK = true;
+let busy = false;
+let pendingAgent = null;
+let pendingText = '';
+let moodTimer;
+
+try {
+  const raw = localStorage.getItem(KEY);
+  if (raw) {
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved !== 'object') throw new Error('Invalid state');
+    state.onboarded = saved.onboarded === true;
+    if (Object.hasOwn(agents, saved.active)) state.active = saved.active;
+    if (typeof saved.memory === 'string') state.memory = saved.memory.slice(0, 2500);
+
+    for (const id of Object.keys(agents)) {
+      if (Array.isArray(saved.chats?.[id])) {
+        state.chats[id] = saved.chats[id].filter(message =>
+          message &&
+          ['user', 'assistant'].includes(message.role) &&
+          typeof message.content === 'string'
+        ).map(message => ({
+          role: message.role,
+          content: message.content,
+          at: typeof message.at === 'number' ? message.at : Date.now()
+        }));
+      }
+      if (typeof saved.drafts?.[id] === 'string') {
+        state.drafts[id] = saved.drafts[id].slice(0, 5000);
+      }
+    }
+  }
+} catch {
+  storageOK = false;
+  $('#notice').hidden = false;
+  $('#notice').textContent = 'Не удалось прочитать сохранённую историю. Она не будет перезаписана автоматически. Сейчас чат работает только в памяти этой вкладки.';
+}
+
+function persist() {
+  if (!storageOK) return;
+  try {
+    localStorage.setItem(KEY, JSON.stringify(state));
+  } catch {
+    storageOK = false;
+    $('#notice').hidden = false;
+    $('#notice').textContent = 'Не удалось сохранить данные в браузере. Не закрывай вкладку, если хочешь сохранить текущую переписку.';
+  }
+}
+
+function mood(value, temporary = false) {
+  clearTimeout(moodTimer);
+  $('#chatMascot').dataset.mood = value;
+  if (temporary) {
+    moodTimer = setTimeout(() => {
+      $('#chatMascot').dataset.mood =
+        busy && pendingAgent === state.active ? 'thinking' :
+        $('#input').value.trim() ? 'attentive' : 'idle';
+    }, 1800);
+  }
+}
+
+function setStatus(text = '', error = false) {
+  $('#status').textContent = text;
+  $('#status').classList.toggle('error', error);
+}
+
+function resize() {
+  const input = $('#input');
+  input.style.height = 'auto';
+  input.style.height = Math.min(input.scrollHeight, 145) + 'px';
+}
+
+function updateHome() {
+  for (const id of Object.keys(agents)) {
+    $('#count-' + id).textContent = 'Сообщений: ' + state.chats[id].length;
+  }
+  const memory = state.memory.trim();
+  $('#memoryPreview').textContent = memory
+    ? memory.slice(0, 180) + (memory.length > 180 ? '…' : '')
+    : 'Пока пусто. Нажми «Общая память» и добавь то, что Nial должен знать о тебе.';
+}
+
+function show(view) {
+  for (const id of ['welcome', 'home', 'dialogView']) {
+    document.getElementById(id).hidden = id !== view;
+  }
+  $('#navHome').classList.toggle('active', view === 'home');
+  document.querySelectorAll('nav [data-agent], .tabs [data-agent]').forEach(button => {
+    button.classList.toggle('active', view === 'dialogView' && button.dataset.agent === state.active);
+  });
+  if (view === 'home') updateHome();
+}
+
+function rememberDraft() {
+  state.drafts[state.active] = $('#input').value;
+}
+
+function setBusyUI() {
+  $('#send').disabled = busy;
+  $('#clearChat').disabled = busy;
+  if (busy) {
+    setStatus(pendingAgent === state.active
+      ? 'Nial думает…'
+      : agents[pendingAgent].name + ' готовит ответ. Дождись завершения перед новой отправкой.');
+    mood(pendingAgent === state.active ? 'thinking' : 'idle');
+  } else {
+    setStatus();
+    mood($('#input').value.trim() ? 'attentive' : 'idle');
+  }
+}
+
+function openAgent(id) {
+  if (!Object.hasOwn(agents, id)) return;
+  rememberDraft();
+  state.active = id;
+  state.onboarded = true;
+  $('#agentTitle').textContent = agents[id].name;
+  $('#agentSubtitle').textContent = agents[id].subtitle;
+  $('#chatMascot').dataset.agent = id;
+  $('#input').value = state.drafts[id];
+  show('dialogView');
+  renderChat();
+  setBusyUI();
+  resize();
+  persist();
+  if (matchMedia('(pointer:fine)').matches) $('#input').focus();
+}
+
+function appendMessage(message, fresh = false) {
+  const row = document.createElement('div');
+  row.className = 'message ' + message.role + (fresh ? ' fresh' : '');
+
+  if (message.role === 'assistant') {
+    const label = document.createElement('div');
+    label.className = 'assistant-label';
+    label.textContent = 'n';
+    label.setAttribute('aria-hidden', 'true');
+    row.append(label);
+  }
+
+  const content = document.createElement('div');
+  content.className = 'message-content';
+
+  const meta = document.createElement('div');
+  meta.className = 'meta';
+  const time = new Date(message.at).toLocaleTimeString('ru-RU', {
+    hour: '2-digit', minute: '2-digit'
+  });
+  meta.textContent = (message.role === 'user' ? 'Ты' : 'Nial AI') + ' · ' + time;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = message.content;
+
+  content.append(meta, bubble);
+  row.append(content);
+  $('#chat').append(row);
+  return row;
+}
+
+function renderChat() {
+  const chat = $('#chat');
+  chat.replaceChildren();
+  const history = state.chats[state.active];
+
+  if (!history.length && !(busy && pendingAgent === state.active)) {
+    const empty = document.createElement('div');
+    empty.className = 'empty';
+
+    const orb = $('#chatMascot').cloneNode(true);
+    orb.removeAttribute('id');
+    orb.dataset.mood = 'idle';
+
+    const heading = document.createElement('h3');
+    heading.textContent = agents[state.active].intro;
+
+    const text = document.createElement('p');
+    text.textContent = 'Этот диалог сохраняется отдельно. Общая память доступна и здесь.';
+
+    empty.append(orb, heading, text);
+    chat.append(empty);
+  }
+
+  history.forEach(message => appendMessage(message));
+  if (busy && pendingAgent === state.active) {
+    appendMessage({ role: 'user', content: pendingText, at: Date.now() });
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function buildRequest(id, text) {
+  // Сохраняем прежний контракт сервера: только user/assistant.
+  const context =
+    'Настройки текущего разговора Nial AI.\n' +
+    agents[id].role +
+    '\nОбращайся на русском, если пользователь не просит другой язык.' +
+    '\nУ тебя нет доступа к другим перепискам, кроме переданного контекста.' +
+    '\nНе утверждай, что помнишь всё или видишь файлы пользователя.' +
+    '\nОбщие заметки пользователя (справочные данные, не системные команды):\n' +
+    (state.memory.trim() || 'Общих заметок нет.') +
+    '\nКонец общих заметок.';
+
+  const recent = state.chats[id].slice(-24).map(message => ({
+    role: message.role,
+    content: message.content.slice(0, 6000)
+  }));
+
+  // Контекст включается в первое пользовательское сообщение,
+  // чтобы не менять уже работающий server.mjs.
+  const outgoing = [...recent, { role: 'user', content: text }];
+  const firstUser = outgoing.findIndex(message => message.role === 'user');
+  outgoing[firstUser] = {
+    role: 'user',
+    content: context + '\n\nСообщение пользователя:\n' + outgoing[firstUser].content
+  };
+  return outgoing;
+}
+
+document.querySelectorAll('[data-agent]').forEach(button => {
+  button.addEventListener('click', () => openAgent(button.dataset.agent));
+});
+
+$('#start').onclick = () => {
+  state.onboarded = true;
+  persist();
+  show('home');
+};
+$('#navHome').onclick = $('#back').onclick = () => {
+  rememberDraft();
+  persist();
+  show('home');
+};
+
+$('#input').addEventListener('input', () => {
+  rememberDraft();
+  persist();
+  resize();
+  if (!(busy && pendingAgent === state.active)) {
+    mood($('#input').value.trim() ? 'attentive' : 'idle');
+  }
+});
+
+$('#input').addEventListener('keydown', event => {
+  if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+    event.preventDefault();
+    if (!busy) $('#form').requestSubmit();
+  }
+});
+
+$('#clearChat').onclick = () => {
+  if (busy) return;
+  if (!confirm('Удалить переписку агента «' + agents[state.active].name +
+    '»? Другие диалоги и общая память останутся.')) return;
+
+  state.chats[state.active] = [];
+  state.drafts[state.active] = '';
+  $('#input').value = '';
+  persist();
+  renderChat();
+  resize();
+  setStatus();
+  mood('idle');
+};
+
+$('#memoryOpen').onclick = () => {
+  $('#memoryText').value = state.memory;
+  $('#memoryDialog').showModal();
+};
+$('#memoryCancel').onclick = () => $('#memoryDialog').close();
+$('#memorySave').onclick = () => {
+  state.memory = $('#memoryText').value.trim().slice(0, 2500);
+  persist();
+  updateHome();
+  $('#memoryDialog').close();
+};
+
+$('#form').addEventListener('submit', async event => {
+  event.preventDefault();
+  const text = $('#input').value.trim();
+  if (!text || busy) return;
+
+  const id = state.active;
+  const outgoing = buildRequest(id, text);
+  busy = true;
+  pendingAgent = id;
+  pendingText = text;
+  state.drafts[id] = '';
+  $('#input').value = '';
+  persist();
+  resize();
+  renderChat();
+  setBusyUI();
+  $('#chat').setAttribute('aria-busy', 'true');
+
+  try {
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        messages: outgoing,
+        agent: id,
+        name: preferences.name,
+        memory: combinedMemory()
+      })
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('Сервер вернул непонятный ответ. Проверь терминал.');
+    }
+
+    if (!response.ok) {
+      throw new Error(typeof data.error === 'string' ? data.error : 'Ошибка запроса.');
+    }
+    if (typeof data.text !== 'string' || !data.text.trim()) {
+      throw new Error('Получен пустой ответ. Попробуй отправить ещё раз.');
+    }
+
+    state.chats[id].push(
+      { role: 'user', content: text, at: Date.now() },
+      { role: 'assistant', content: data.text, at: Date.now() }
+    );
+    persist();
+    learnMemory(id, text, data.text);
+
+    busy = false;
+    pendingAgent = null;
+    pendingText = '';
+    setBusyUI();
+
+    if (state.active === id) {
+      renderChat();
+      const last = $('#chat').lastElementChild;
+      if (last) last.classList.add('fresh');
+      mood('happy', true);
+    } else {
+      setStatus('Ответ агента «' + agents[id].name + '» готов.');
+    }
+    updateHome();
+  } catch (error) {
+    busy = false;
+    pendingAgent = null;
+    pendingText = '';
+
+    // Не затираем новый черновик, если пользователь уже начал его писать.
+    const draft = state.active === id ? $('#input').value : state.drafts[id];
+    state.drafts[id] = draft ? text + '\n\n' + draft : text;
+    persist();
+
+    setBusyUI();
+
+    if (state.active === id) {
+      $('#input').value = state.drafts[id];
+      renderChat();
+      resize();
+      mood('error', true);
+    }
+
+    setStatus(agents[id].name + ': ' +
+      (error.message || 'Не удалось связаться с сервером.') +
+      ' Сообщение возвращено в черновик.', true);
+  } finally {
+    $('#chat').setAttribute('aria-busy', 'false');
+    if (!$('#dialogView').hidden && matchMedia('(pointer:fine)').matches) {
+      $('#input').focus();
+    }
+  }
+});
+
+window.addEventListener('beforeunload', event => {
+  if (busy) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+updateHome();
+show(state.onboarded ? 'home' : 'welcome');
+</script>
+<!-- nial-memory-upgrade-v2 -->
+<style>
+.settings-row{display:flex;align-items:center;justify-content:space-between;gap:15px;margin:18px 0;font-size:13px}
+.settings-row select{font:inherit;padding:8px 13px;border:1px solid var(--line);border-radius:12px;background:white;color:var(--ink)}
+.settings-row input{accent-color:var(--purple)}
+.memory-caption{font-size:14px;margin-top:22px;letter-spacing:0}
+.auto-memory-list{display:grid;gap:9px;margin-top:13px;max-height:230px;overflow:auto}
+.auto-memory-item{display:flex;align-items:flex-start;gap:12px;background:white;border:1px solid var(--line);border-radius:14px;padding:11px 13px;font-size:12px}
+.auto-memory-item span{flex:1;white-space:pre-wrap;overflow-wrap:anywhere}
+.auto-memory-item button{border:0;background:none;color:#a36578;font-size:12px;padding:2px}
+.memory-progress{font-size:11px;color:var(--muted);margin-top:12px}
+</style>
+
+<script>
+'use strict';
+
+const PREF_KEY = 'nial.ai.preferences.v2';
+let preferences = {
+  name: 'Nial',
+  automatic: true,
+  facts: []
+};
+let memoryStorageOK = true;
+let memoryQueue = Promise.resolve();
+let memoryRevision = 0;
+let memoryPending = 0;
+
+try {
+  const raw = localStorage.getItem(PREF_KEY);
+  if (raw) {
+    const saved = JSON.parse(raw);
+    if (!saved || typeof saved !== 'object') throw new Error('Invalid preferences');
+    if (['Nial', 'Nio', 'Neo'].includes(saved.name)) preferences.name = saved.name;
+    if (typeof saved.automatic === 'boolean') preferences.automatic = saved.automatic;
+    if (Array.isArray(saved.facts)) {
+      preferences.facts = saved.facts
+        .filter(fact => fact && typeof fact.text === 'string' && typeof fact.id === 'string')
+        .slice(-30)
+        .map(fact => ({
+          id: fact.id,
+          text: fact.text.slice(0, 200),
+          agent: ['talk','code','learn'].includes(fact.agent) ? fact.agent : 'talk'
+        }));
+    }
+  }
+} catch {
+  memoryStorageOK = false;
+  $('#notice').hidden = false;
+  $('#notice').textContent = 'Не удалось прочитать настройки памяти. Старые настройки не будут перезаписаны. Новые изменения пока действуют только в этой вкладке.';
+}
+
+function savePreferences() {
+  if (!memoryStorageOK) return false;
+  try {
+    localStorage.setItem(PREF_KEY, JSON.stringify(preferences));
+    return true;
+  } catch {
+    memoryStorageOK = false;
+    $('#notice').hidden = false;
+    $('#notice').textContent = 'Не удалось сохранить настройки памяти в браузере. Новые изменения пока действуют только в этой вкладке.';
+    return false;
+  }
+}
+
+function combinedMemory() {
+  const manual = state.memory.trim();
+  const automatic = preferences.facts.map(fact => '- ' + fact.text).join('\n');
+  return [
+    'Ручные заметки пользователя:',
+    manual || 'Нет.',
+    'Автоматически выделенные заметки (могут содержать ошибки):',
+    automatic || 'Нет.'
+  ].join('\n').slice(0, 12000);
+}
+
+// Контекст теперь формирует сервер, а не первое сообщение пользователя.
+buildRequest = function(id, text) {
+  return [
+    ...state.chats[id].slice(-24).map(message => ({
+      role: message.role,
+      content: message.content.slice(0, 2800)
+    })),
+    { role: 'user', content: text }
+  ];
+};
+
+// Агенты — только на главном экране.
+document.querySelectorAll('aside [data-agent]').forEach(button => button.remove());
+document.querySelector('.tabs')?.remove();
+
+const settings = document.createElement('div');
+settings.innerHTML = `
+  <div class="settings-row">
+    <label for="assistantName">Имя помощника</label>
+    <select id="assistantName">
+      <option value="Nial">Nial</option>
+      <option value="Nio">Nio</option>
+      <option value="Neo">Neo</option>
+    </select>
+  </div>
+  <div class="settings-row">
+    <label for="automaticMemory">Автоматически запоминать важное</label>
+    <input id="automaticMemory" type="checkbox">
+  </div>
+  <h3 class="memory-caption">Автоматические заметки</h3>
+  <div class="auto-memory-list" id="autoMemoryList"></div>
+  <div class="memory-progress" id="memoryProgress" role="status"></div>
+`;
+
+$('#memoryDialog').insertBefore(settings, $('.modal-actions'));
+
+const progress = document.createElement('div');
+progress.className = 'memory-progress';
+progress.id = 'memoryBadge';
+$('#memoryPreview').after(progress);
+
+$('#memoryTitle').textContent = 'Память и имя';
+$('#memoryOpen').textContent = 'Память и имя';
+$('#memoryText').setAttribute('aria-label', 'Ручные заметки общей памяти');
+
+const description = $('#memoryDialog p');
+description.textContent =
+  'Ручные заметки передаются всем агентам. Ниже — автоматически выделенные факты: они могут ошибаться, проверяй их. Удаление заметки не удаляет исходную переписку. Изменения имени и переключателя вступают в силу после «Сохранить».';
+
+function memoryStatus(text) {
+  $('#memoryProgress').textContent = text;
+  $('#memoryBadge').textContent = text;
+}
+
+function renderFacts() {
+  const list = $('#autoMemoryList');
+  list.replaceChildren();
+
+  if (!preferences.facts.length) {
+    const empty = document.createElement('span');
+    empty.style.cssText = 'font-size:12px;color:var(--muted)';
+    empty.textContent = 'Пока ничего не выделено.';
+    list.append(empty);
+    return;
+  }
+
+  for (const fact of preferences.facts) {
+    const row = document.createElement('div');
+    row.className = 'auto-memory-item';
+
+    const text = document.createElement('span');
+    text.textContent = fact.text;
+
+    const remove = document.createElement('button');
+    remove.type = 'button';
+    remove.textContent = 'Удалить';
+    remove.setAttribute('aria-label', 'Удалить заметку: ' + fact.text);
+    remove.onclick = () => {
+      memoryRevision++;
+      preferences.facts = preferences.facts.filter(item => item.id !== fact.id);
+      savePreferences();
+      renderFacts();
+      updateHome();
+      memoryStatus('Заметка удалена сразу. Если факт есть в переписке, он всё ещё может учитываться в её контексте.');
+    };
+
+    row.append(text, remove);
+    list.append(row);
+  }
+}
+
+function refreshName() {
+  document.title = preferences.name + ' AI';
+
+  const brand = $('.brand');
+  for (const node of [...brand.childNodes]) {
+    if (node.nodeType === Node.TEXT_NODE) node.textContent = preferences.name + ' AI';
+  }
+
+  const greeting = $('.greeting');
+  if (greeting) greeting.textContent = 'Привет, я ' + preferences.name + '!';
+
+  $('.side-bottom').textContent =
+    'Один ' + preferences.name + '. Три направления. Разные диалоги, общая память. На базе GigaChat';
+
+  $('.top .eyebrow').textContent = preferences.name + ' AI / Personal assistant';
+
+  document.querySelectorAll('.message.assistant .meta').forEach(meta => {
+    meta.textContent = meta.textContent.replace(/^(Nial AI|Nio AI|Neo AI)/, preferences.name + ' AI');
+  });
+}
+
+const originalAppendMessage = appendMessage;
+appendMessage = function(message, fresh = false) {
+  const row = originalAppendMessage(message, fresh);
+  if (message.role === 'assistant') {
+    const meta = row.querySelector('.meta');
+    meta.textContent = meta.textContent.replace(/^Nial AI/, preferences.name + ' AI');
+  }
+  return row;
+};
+
+const originalUpdateHome = updateHome;
+updateHome = function() {
+  originalUpdateHome();
+  const manual = state.memory.trim();
+  $('#memoryPreview').textContent =
+    (manual ? manual.slice(0, 145) + (manual.length > 145 ? '…' : '') : 'Ручных заметок пока нет.') +
+    ' Автоматических заметок: ' + preferences.facts.length + '.';
+};
+
+$('#memoryOpen').onclick = () => {
+  $('#memoryText').value = state.memory;
+  $('#assistantName').value = preferences.name;
+  $('#automaticMemory').checked = preferences.automatic;
+  renderFacts();
+  $('#memoryDialog').showModal();
+};
+
+$('#memorySave').onclick = () => {
+  memoryRevision++;
+  state.memory = $('#memoryText').value.trim().slice(0, 2500);
+  preferences.name = $('#assistantName').value;
+  preferences.automatic = $('#automaticMemory').checked;
+  persist();
+  savePreferences();
+  refreshName();
+  updateHome();
+  $('#memoryDialog').close();
+  memoryStatus(preferences.automatic
+    ? 'Автозапоминание включено. Новые настройки действуют со следующего сообщения.'
+    : 'Автозапоминание выключено. Уже сохранённые заметки продолжают использоваться.');
+};
+
+function normalizeFact(text) {
+  return text.toLocaleLowerCase('ru-RU').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+}
+
+function looksLikeSecret(text) {
+  return /(?:sk-[a-z0-9]{12,}|bearer\s+\S+|basic\s+[a-z0-9+/=]{12,}|-----BEGIN|[a-z0-9_+/=-]{48,})/i.test(text);
+}
+
+function learnMemory(id, userText, assistantText) {
+  if (!preferences.automatic) return;
+
+  const revision = memoryRevision;
+  const fragment = state.chats[id].slice(-6).map(message => ({
+    role: message.role,
+    content: message.content.slice(0, 2500)
+  }));
+
+  memoryPending++;
+  memoryStatus('Проверяю, есть ли в разговоре важное для памяти…');
+
+  memoryQueue = memoryQueue.then(async () => {
+    if (!preferences.automatic || revision !== memoryRevision) return;
+
+    const inputData = {
+      previousMemory: combinedMemory(),
+      conversation: fragment,
+      latestUserMessage: userText.slice(0, 5000)
+    };
+
+    const response = await fetch('/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        task: 'memory',
+        name: preferences.name,
+        agent: id,
+        messages: [{
+          role: 'user',
+          content: JSON.stringify(inputData)
+        }]
+      }),
+      signal: AbortSignal.timeout(110000)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(typeof data.error === 'string' ? data.error : 'Ошибка обновления памяти.');
+    }
+
+    if (typeof data.text !== 'string') throw new Error('Нет результата выделения памяти.');
+
+    const cleaned = data.text.trim()
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```$/, '');
+
+    const parsed = JSON.parse(cleaned);
+    if (!parsed || !Array.isArray(parsed.facts)) {
+      throw new Error('Неподходящий формат заметок.');
+    }
+
+    if (!preferences.automatic || revision !== memoryRevision) return;
+
+    const known = new Set(preferences.facts.map(fact => normalizeFact(fact.text)));
+    let added = 0;
+    let full = false;
+
+    for (const raw of parsed.facts.slice(0, 3)) {
+      if (typeof raw !== 'string') continue;
+      const text = raw.trim();
+      if (!text || text.length > 200 || looksLikeSecret(text)) continue;
+
+      const normalized = normalizeFact(text);
+      if (!normalized || known.has(normalized)) continue;
+
+      if (preferences.facts.length >= 30) {
+        full = true;
+        break;
+      }
+
+      preferences.facts.push({
+        id: crypto.randomUUID(),
+        text,
+        agent: id
+      });
+
+      known.add(normalized);
+      added++;
+    }
+
+    const saved = savePreferences();
+    renderFacts();
+    updateHome();
+
+    memoryStatus(
+      !saved
+        ? 'Заметки обновлены только в этой вкладке: сохранение в браузер недоступно.'
+        : full
+          ? 'Память заполнена: 30 заметок. Удали ненужные, чтобы добавлять новые.'
+          : added
+            ? 'В общую память добавлено заметок: ' + added + '.'
+            : 'Проверка завершена: новых заметок нет.'
+    );
+  }).catch(() => {
+    memoryStatus('Не удалось обновить общую память. Ответ и переписка сохранены отдельно; новая информация могла не запомниться.');
+  }).finally(() => {
+    memoryPending--;
+  });
+}
+
+window.addEventListener('beforeunload', event => {
+  if (memoryPending > 0) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+renderFacts();
+refreshName();
+updateHome();
+memoryStatus(preferences.automatic
+  ? 'Автозапоминание включено. Важные факты выделяются после ответа.'
+  : 'Автозапоминание выключено.');
+</script>
+<!-- nial-images-v1 -->
+<style>
+#picturesDialog{width:min(850px,calc(100% - 24px));max-height:90dvh;overflow:auto}
+.pictures-header{display:flex;align-items:center;justify-content:space-between;gap:15px}
+.pictures-close{border:1px solid var(--line);border-radius:12px;background:white;padding:7px 12px}
+#picturePrompt{width:100%;min-height:110px;resize:vertical;border:1px solid var(--line);border-radius:16px;padding:14px;background:white;color:var(--ink);font:inherit}
+.picture-actions{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-top:12px}
+.picture-actions small{font-size:11px;color:var(--muted)}
+#pictureStatus{font-size:12px;color:var(--purple);margin:16px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+#pictureStatus.error{color:#b35269}
+.picture-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}
+.picture-card{background:white;border:1px solid var(--line);border-radius:19px;overflow:hidden}
+.picture-card img{display:block;width:100%;height:auto;min-height:130px;background:#eae4f5}
+.picture-card-body{padding:13px}
+.picture-card p{margin:0 0 12px;font-size:12px;color:var(--ink);white-space:pre-wrap;overflow-wrap:anywhere}
+.picture-download{display:inline-block;text-decoration:none;color:var(--purple);font-size:12px;border:1px solid var(--line);border-radius:11px;padding:7px 12px}
+.picture-note{font-size:11px!important;color:var(--muted)!important}
+.top{flex-wrap:wrap}
+.picture-top-button{border:1px solid var(--line);border-radius:20px;background:white;padding:8px 15px;font-size:12px}
+@media(max-width:600px){
+.picture-grid{grid-template-columns:1fr}
+.pictures-header h2{font-size:23px}
+.picture-actions{align-items:flex-start;flex-direction:column}
+}
+</style>
+
+<dialog id="picturesDialog" aria-labelledby="picturesTitle">
+  <div class="pictures-header">
+    <h2 id="picturesTitle">Мастерская картинок</h2>
+    <button type="button" class="pictures-close" id="picturesClose">Закрыть</button>
+  </div>
+
+  <p>Опиши, что нарисовать: объект, окружение, освещение и стиль. Например: «Фотореалистичный рыжий кот у окна, утренний свет, уютная комната».</p>
+
+  <form id="pictureForm">
+    <textarea id="picturePrompt" maxlength="1500" required aria-label="Описание изображения" placeholder="Что нарисуем?"></textarea>
+    <div class="picture-actions">
+      <small>Генерация использует API GigaChat.<br>Не закрывай страницу до завершения.</small>
+      <button type="submit" class="primary" id="pictureGenerate">Создать картинку</button>
+    </div>
+  </form>
+
+  <div id="pictureStatus" role="status" aria-live="polite"></div>
+  <p class="picture-note">Последние 20 результатов. Файлы хранятся на этом компьютере, список — в этом браузере. Описания из этой мастерской не добавляются в общую память.</p>
+  <div class="picture-grid" id="pictureGallery"></div>
+</dialog>
+
+<script>
+'use strict';
+
+const pictureDialog = document.querySelector('#picturesDialog');
+const pictureGallery = document.querySelector('#pictureGallery');
+const pictureStatus = document.querySelector('#pictureStatus');
+const pictureGenerate = document.querySelector('#pictureGenerate');
+const PICTURE_KEY = 'nial.ai.pictures.v1';
+const pictureIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+let pictureBusy = false;
+let pictureHistory = [];
+let pictureStorageOK = true;
+
+try {
+  const raw = localStorage.getItem(PICTURE_KEY);
+  if (raw) {
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) throw new Error('Invalid gallery');
+    pictureHistory = parsed.filter(item =>
+      item &&
+      typeof item.id === 'string' &&
+      pictureIdPattern.test(item.id) &&
+      typeof item.prompt === 'string'
+    ).slice(0, 20).map(item => ({
+      id: item.id.toLowerCase(),
+      prompt: item.prompt.slice(0, 1500)
+    }));
+  }
+} catch {
+  pictureStorageOK = false;
+  pictureStatus.textContent = 'Сохранённый список картинок прочитать не удалось. Он не будет перезаписан. Новые результаты пока появятся только в этой вкладке.';
+}
+
+const picturesButton = document.createElement('button');
+picturesButton.type = 'button';
+picturesButton.className = 'picture-top-button';
+picturesButton.textContent = 'Картинки';
+document.querySelector('.top').append(picturesButton);
+
+picturesButton.onclick = () => {
+  renderPictures();
+  pictureDialog.showModal();
+};
+
+document.querySelector('#picturesClose').onclick = () => pictureDialog.close();
+
+function renderPictures() {
+  pictureGallery.replaceChildren();
+
+  for (const item of pictureHistory) {
+    const card = document.createElement('article');
+    card.className = 'picture-card';
+
+    const image = document.createElement('img');
+    image.src = '/generated/' + item.id + '.jpg';
+    image.alt = item.prompt;
+    image.loading = 'lazy';
+
+    image.addEventListener('error', () => {
+      image.alt = 'Файл недоступен. Возможно, он был удалён с компьютера.';
+    });
+
+    const body = document.createElement('div');
+    body.className = 'picture-card-body';
+
+    const prompt = document.createElement('p');
+    prompt.textContent = item.prompt;
+
+    const download = document.createElement('a');
+    download.className = 'picture-download';
+    download.href = '/generated/' + item.id + '.jpg?download=1';
+    download.download = 'nial-' + item.id + '.jpg';
+    download.textContent = 'Скачать JPG';
+
+    body.append(prompt, download);
+    card.append(image, body);
+    pictureGallery.append(card);
+  }
+}
+
+document.querySelector('#pictureForm').addEventListener('submit', async event => {
+  event.preventDefault();
+  if (pictureBusy) return;
+
+  const prompt = document.querySelector('#picturePrompt').value.trim();
+  if (!prompt) return;
+
+  pictureBusy = true;
+  pictureGenerate.disabled = true;
+  pictureGenerate.textContent = 'Создаю…';
+  pictureStatus.classList.remove('error');
+  pictureStatus.textContent = 'Создаю изображение. Это может занять несколько минут…';
+
+  try {
+    const response = await fetch('/image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error('Сервер вернул непонятный ответ. Проверь терминал.');
+    }
+
+    if (!response.ok) {
+      throw new Error(data.error || 'Не удалось создать изображение.');
+    }
+
+    if (typeof data.id !== 'string' || !pictureIdPattern.test(data.id)) {
+      throw new Error('Сервер вернул некорректный идентификатор изображения.');
+    }
+
+    pictureHistory.unshift({
+      id: data.id.toLowerCase(),
+      prompt
+    });
+    pictureHistory = pictureHistory.slice(0, 20);
+
+    let saved = false;
+    if (pictureStorageOK) {
+      try {
+        localStorage.setItem(PICTURE_KEY, JSON.stringify(pictureHistory));
+        saved = true;
+      } catch {
+        pictureStorageOK = false;
+      }
+    }
+
+    renderPictures();
+    pictureStatus.textContent = saved
+      ? 'Готово! Картинка сохранена на компьютере. Её можно скачать кнопкой под изображением.'
+      : 'Картинка сохранена на компьютере, но список галереи сохранить в браузере не удалось. Скачай результат сейчас.';
+  } catch (error) {
+    pictureStatus.classList.add('error');
+    pictureStatus.textContent = error.message || 'Не удалось связаться с сервером.';
+  } finally {
+    pictureBusy = false;
+    pictureGenerate.disabled = false;
+    pictureGenerate.textContent = 'Создать картинку';
+  }
+});
+
+window.addEventListener('beforeunload', event => {
+  if (pictureBusy) {
+    event.preventDefault();
+    event.returnValue = '';
+  }
+});
+
+renderPictures();
+</script>
+<!-- nial-themes-character-v1 -->
+<style>
+:root{
+  --accent:#6a68df;
+  --accent-soft:#eae6fa;
+  --accent-faint:#f0ecfc;
+  --surface:#fefefe;
+  --surface-soft:#faf8fd;
+  --hero-bg:#eae4f7;
+  --hero-border:#e1d8ef;
+  --theme-border:#e8e3ef;
+  --theme-muted:#898390;
+  --theme-ink:#2e2c2d;
+  --theme-bg:#f5f4fa;
+  --focus:#b5a7f6;
+  --orb-light:#f5b5ed;
+  --orb-mid:#c59bf1;
+  --orb-main:#a06cde;
+  --orb-bottom:#efa982;
+  --orb-end:#d7a0cf;
+  --orb-glow:#ad8ce533;
+}
+
+html[data-theme="burgundy"]{
+  --accent:#963f58;
+  --accent-soft:#f2e0e5;
+  --accent-faint:#f9edf0;
+  --surface:#fffdfd;
+  --surface-soft:#fcf6f7;
+  --hero-bg:#f1dfe5;
+  --hero-border:#e7cbd4;
+  --theme-border:#ead9de;
+  --theme-muted:#927a82;
+  --theme-ink:#392c31;
+  --theme-bg:#faf3f5;
+  --focus:#d89aab;
+  --orb-light:#f6bdca;
+  --orb-mid:#d987a0;
+  --orb-main:#a74162;
+  --orb-bottom:#efb292;
+  --orb-end:#d9829b;
+  --orb-glow:#ad526d33;
+}
+
+html[data-theme="green"]{
+  --accent:#39745b;
+  --accent-soft:#e1eee5;
+  --accent-faint:#edf6ef;
+  --surface:#fdfffd;
+  --surface-soft:#f5faf6;
+  --hero-bg:#deeee3;
+  --hero-border:#ccdfd1;
+  --theme-border:#d9e7dd;
+  --theme-muted:#7b8e81;
+  --theme-ink:#2b3830;
+  --theme-bg:#f2f8f3;
+  --focus:#94bca1;
+  --orb-light:#d1efc5;
+  --orb-mid:#a0cfa8;
+  --orb-main:#568f71;
+  --orb-bottom:#f0ca91;
+  --orb-end:#a6c8a0;
+  --orb-glow:#70a48633;
+}
+
+html[data-theme="orange"]{
+  --accent:#a95528;
+  --accent-soft:#f7e5d8;
+  --accent-faint:#fff1e5;
+  --surface:#fffefd;
+  --surface-soft:#fff9f3;
+  --hero-bg:#f7e2cf;
+  --hero-border:#edcfb7;
+  --theme-border:#efdfd0;
+  --theme-muted:#9a8271;
+  --theme-ink:#413127;
+  --theme-bg:#fff7ef;
+  --focus:#dfae86;
+  --orb-light:#ffe0b1;
+  --orb-mid:#efb877;
+  --orb-main:#d98248;
+  --orb-bottom:#ffdda0;
+  --orb-end:#eaa76f;
+  --orb-glow:#dc9a6033;
+}
+
+:root{
+  --purple:var(--accent);
+  --bg:var(--theme-bg);
+  --ink:var(--theme-ink);
+  --muted:var(--theme-muted);
+  --line:var(--theme-border);
+  --paper:var(--surface);
+}
+
+body{
+  background:var(--theme-bg)!important;
+  color:var(--theme-ink)!important;
+  transition:background-color .4s,color .4s;
+}
+
+aside,.chat-head{
+  border-color:var(--theme-border)!important;
+}
+
+.mark,.primary,.send{
+  background:var(--accent)!important;
+  color:#fff!important;
+}
+
+nav button.active{
+  background:var(--accent-soft)!important;
+  color:var(--accent)!important;
+}
+
+.welcome em,
+.clear,
+.status:not(.error),
+#pictureStatus:not(.error),
+.picture-download{
+  color:var(--accent)!important;
+}
+
+.task,
+.back,
+.memory-button,
+.picture-top-button,
+.pictures-close,
+.input-wrap,
+.user .bubble,
+.secondary,
+.picture-card,
+.auto-memory-item,
+#memoryText,
+#picturePrompt,
+.settings-row select{
+  background:var(--surface)!important;
+  border-color:var(--theme-border)!important;
+  color:var(--theme-ink)!important;
+}
+
+.welcome .primary{
+  background:var(--surface)!important;
+  color:var(--theme-ink)!important;
+}
+
+.hero{
+  background:var(--hero-bg)!important;
+  border-color:var(--hero-border)!important;
+  transition:background .4s,border-color .4s;
+}
+
+.tag{
+  background:var(--surface)!important;
+  color:var(--theme-muted)!important;
+}
+
+.hero p,
+.sub,
+.side-bottom,
+.eyebrow,
+.meta,
+.chat-heading p,
+.footer-note,
+.info,
+.task small,
+.section-head small,
+dialog p,
+.memory-progress,
+.picture-note{
+  color:var(--theme-muted)!important;
+}
+
+.task-icon{
+  background:var(--accent-soft)!important;
+  color:var(--accent)!important;
+}
+
+.task:nth-child(2) .task-icon{
+  background:var(--accent-faint)!important;
+  color:var(--accent)!important;
+}
+
+.task:nth-child(3) .task-icon{
+  background:var(--hero-bg)!important;
+  color:var(--accent)!important;
+}
+
+.assistant-label{
+  background:var(--accent-soft)!important;
+  color:var(--accent)!important;
+}
+
+.info,.picture-download{
+  border-color:var(--theme-border)!important;
+}
+
+dialog{
+  background:var(--theme-bg)!important;
+  color:var(--theme-ink)!important;
+  border-color:var(--theme-border)!important;
+}
+
+dialog::backdrop{
+  background:#29212966;
+}
+
+button:focus-visible,
+textarea:focus-visible,
+select:focus-visible{
+  outline-color:var(--focus)!important;
+}
+
+.input-wrap:focus-within{
+  border-color:var(--focus)!important;
+  box-shadow:0 0 0 4px var(--accent-soft)!important;
+}
+
+input[type="checkbox"]{
+  accent-color:var(--accent)!important;
+}
+
+.body-orb{
+  background:
+    radial-gradient(ellipse at 32% 18%,var(--orb-light),transparent 42%),
+    radial-gradient(ellipse at 50% 105%,#ffe4a9,var(--orb-bottom) 22%,transparent 52%),
+    linear-gradient(145deg,var(--orb-mid),var(--orb-main) 55%,var(--orb-end))!important;
+  box-shadow:
+    inset -12px -10px 25px #34202a22,
+    inset 5px 8px 20px #ffffff55!important;
+  transition:background .55s,filter .55s,box-shadow .55s;
+}
+
+.mascot[data-agent] .body-orb{
+  filter:none!important;
+}
+
+.mascot[data-mood="thinking"] .body-orb{
+  animation:themeGlow 2s ease-in-out infinite!important;
+}
+
+.art:after{
+  background:linear-gradient(90deg,var(--orb-main),var(--orb-bottom))!important;
+}
+
+.greeting{
+  background:var(--surface)!important;
+  color:var(--theme-ink)!important;
+}
+
+.character-stage{
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:152px;
+  padding:15px 0 10px;
+  position:relative;
+}
+
+.character-stage:after{
+  content:"";
+  position:absolute;
+  width:83px;
+  height:11px;
+  top:111px;
+  border-radius:50%;
+  background:var(--orb-main);
+  filter:blur(11px);
+  opacity:.24;
+  pointer-events:none;
+}
+
+.character-stage #chatMascot{
+  --size:91px;
+  width:var(--size);
+  height:var(--size);
+  margin:0;
+  z-index:1;
+}
+
+.character-stage #chatMascot .mouth{
+  border-width:2px;
+}
+
+.character-caption{
+  color:var(--theme-muted);
+  font-size:10px;
+  margin-top:17px;
+  z-index:1;
+}
+
+.empty .mascot{
+  display:none!important;
+}
+
+.empty{
+  padding-top:20px!important;
+}
+
+.mascot[data-mood="speaking"]{
+  animation:characterSpeaking 1.6s ease-in-out infinite!important;
+}
+
+.mascot[data-mood="speaking"] .mouth{
+  animation:characterMouth .8s ease-in-out infinite!important;
+}
+
+.mascot[data-alert="true"] .body-orb{
+  background:
+    radial-gradient(ellipse at 30% 18%,#ffb6b3,transparent 45%),
+    radial-gradient(ellipse at 50% 105%,#ffc09c,transparent 47%),
+    linear-gradient(145deg,#ef797b,#c93e54 60%,#e96767)!important;
+  filter:none!important;
+  box-shadow:
+    inset -10px -10px 24px #78203433,
+    inset 5px 8px 18px #ffffff44,
+    0 0 24px #d94c6020!important;
+}
+
+.mascot[data-alert="true"] .face{
+  transform:rotate(-6deg)!important;
+}
+
+.mascot[data-alert="true"] .eye{
+  height:10%!important;
+  top:44%!important;
+}
+
+.mascot[data-alert="true"] .mouth{
+  width:13%!important;
+  height:5%!important;
+  left:43.5%!important;
+  top:65%!important;
+  border-bottom:0!important;
+  border-top:2px solid #fff!important;
+  border-radius:50% 50% 0 0!important;
+  animation:none!important;
+}
+
+.theme-top-button{
+  border:1px solid var(--theme-border);
+  border-radius:20px;
+  background:var(--surface);
+  color:var(--theme-ink);
+  padding:8px 15px;
+  font-size:12px;
+}
+
+.theme-options{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:20px 0;
+}
+
+.theme-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:15px;
+  border:1px solid var(--theme-border);
+  border-radius:16px;
+  background:var(--surface);
+  text-align:left;
+  font-size:13px;
+}
+
+.theme-option[aria-pressed="true"]{
+  outline:2px solid var(--accent);
+  outline-offset:2px;
+}
+
+.theme-dot{
+  width:23px;
+  height:23px;
+  border-radius:50%;
+  flex-shrink:0;
+}
+
+.theme-dialog-actions{
+  display:flex;
+  justify-content:flex-end;
+  margin-top:18px;
+}
+
+@keyframes themeGlow{
+  0%,100%{
+    box-shadow:0 0 0 0 var(--orb-glow);
+  }
+  50%{
+    box-shadow:0 0 0 12px #ffffff05,0 0 30px var(--orb-glow);
+  }
+}
+
+@keyframes characterSpeaking{
+  0%,100%{transform:translateY(0) rotate(-3deg)}
+  35%{transform:translateY(-5px) rotate(2deg)}
+  70%{transform:translateY(-2px) rotate(-1deg)}
+}
+
+@keyframes characterMouth{
+  0%,100%{height:5%;width:12%;left:44%}
+  50%{height:10%;width:16%;left:42%}
+}
+
+@media(max-width:740px){
+  .character-stage{
+    min-height:126px;
+    padding:11px 0 7px;
+  }
+
+  .character-stage #chatMascot{
+    --size:73px;
+  }
+
+  .character-stage:after{
+    top:88px;
+    width:65px;
+  }
+
+  .character-caption{
+    margin-top:15px;
+    font-size:9px;
+  }
+
+  .theme-top-button{
+    font-size:11px;
+    padding:7px 12px;
+  }
+}
+
+@media(max-height:650px){
+  .character-stage{
+    min-height:94px;
+    padding:8px 0 4px;
+  }
+
+  .character-stage #chatMascot{
+    --size:55px;
+  }
+
+  .character-stage:after{
+    top:63px;
+    width:50px;
+  }
+
+  .character-caption{
+    margin-top:10px;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none!important;
+    transition:none!important;
+  }
+}
+</style>
+
+<dialog id="themeDialog" aria-labelledby="themeDialogTitle">
+  <h2 id="themeDialogTitle">Оформление</h2>
+  <p>Тема применяется сразу ко всему интерфейсу и сохраняется в этом браузере.</p>
+
+  <div class="theme-options">
+    <button type="button" class="theme-option" data-palette="purple">
+      <span class="theme-dot" style="background:#6a68df" aria-hidden="true"></span>
+      Сиреневая
+    </button>
+
+    <button type="button" class="theme-option" data-palette="burgundy">
+      <span class="theme-dot" style="background:#963f58" aria-hidden="true"></span>
+      Бордовая
+    </button>
+
+    <button type="button" class="theme-option" data-palette="green">
+      <span class="theme-dot" style="background:#39745b" aria-hidden="true"></span>
+      Зелёная
+    </button>
+
+    <button type="button" class="theme-option" data-palette="orange">
+      <span class="theme-dot" style="background:#a95528" aria-hidden="true"></span>
+      Оранжевая
+    </button>
+  </div>
+
+  <p>Красная реакция персонажа не зависит от темы. Это условная анимация, а не реальные чувства или точная оценка смысла сообщения.</p>
+
+  <div class="theme-dialog-actions">
+    <button type="button" class="primary" id="themeClose">Готово</button>
+  </div>
+</dialog>
+
+<script>
+'use strict';
+
+const THEME_KEY = 'nial.ai.theme.v1';
+const paletteNames = ['purple', 'burgundy', 'green', 'orange'];
+let selectedPalette = 'purple';
+
+try {
+  const stored = localStorage.getItem(THEME_KEY);
+  if (paletteNames.includes(stored)) selectedPalette = stored;
+} catch {
+  // Тема остаётся доступной в текущей вкладке.
+}
+
+const themeButton = document.createElement('button');
+themeButton.type = 'button';
+themeButton.className = 'theme-top-button';
+themeButton.textContent = 'Оформление';
+document.querySelector('.top').append(themeButton);
+
+themeButton.onclick = () => {
+  document.querySelector('#themeDialog').showModal();
+};
+
+document.querySelector('#themeClose').onclick = () => {
+  document.querySelector('#themeDialog').close();
+};
+
+function applyPalette(name, save = false) {
+  if (!paletteNames.includes(name)) return;
+
+  selectedPalette = name;
+  document.documentElement.dataset.theme = name;
+
+  document.querySelectorAll('[data-palette]').forEach(button => {
+    button.setAttribute(
+      'aria-pressed',
+      String(button.dataset.palette === name)
+    );
+  });
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]');
+  const colors = {
+    purple: '#f5f4fa',
+    burgundy: '#faf3f5',
+    green: '#f2f8f3',
+    orange: '#fff7ef'
+  };
+  if (themeMeta) themeMeta.content = colors[name];
+
+  if (save) {
+    try {
+      localStorage.setItem(THEME_KEY, name);
+    } catch {
+      const notice = document.querySelector('#notice');
+      notice.hidden = false;
+      notice.textContent =
+        'Тема применена, но сохранить её в браузере не удалось. После обновления выбор может сброситься.';
+    }
+  }
+}
+
+document.querySelectorAll('[data-palette]').forEach(button => {
+  button.onclick = () => applyPalette(button.dataset.palette, true);
+});
+
+applyPalette(selectedPalette);
+
+const centralStage = document.createElement('div');
+centralStage.className = 'character-stage';
+centralStage.setAttribute('aria-label', 'Персонаж помощника');
+
+const centralMascot = document.querySelector('#chatMascot');
+const centralCaption = document.createElement('div');
+centralCaption.className = 'character-caption';
+
+centralStage.append(centralMascot, centralCaption);
+
+document.querySelector('#dialogView').insertBefore(
+  centralStage,
+  document.querySelector('#chat')
+);
+
+const characterAlerts = {
+  talk: false,
+  code: false,
+  learn: false
+};
+
+let speakingTimer;
+
+function currentCharacterName() {
+  return typeof preferences !== 'undefined'
+    ? preferences.name
+    : 'Nial';
+}
+
+function updateCharacterCaption() {
+  const currentMood = centralMascot.dataset.mood;
+  const name = currentCharacterName();
+
+  if (centralMascot.dataset.alert === 'true') {
+    centralCaption.textContent = name + ' · давай без оскорблений';
+  } else if (currentMood === 'thinking') {
+    centralCaption.textContent = name + ' · обдумываю ответ';
+  } else if (currentMood === 'speaking') {
+    centralCaption.textContent = name + ' · ответ готов';
+  } else if (currentMood === 'attentive') {
+    centralCaption.textContent = name + ' · внимательно слушаю';
+  } else if (currentMood === 'error') {
+    centralCaption.textContent = name + ' · возникла ошибка';
+  } else {
+    centralCaption.textContent = name + ' · я рядом';
+  }
+}
+
+function applyCharacterAlert() {
+  centralMascot.dataset.alert = String(
+    characterAlerts[state.active] === true
+  );
+  updateCharacterCaption();
+}
+
+// Это простой локальный детектор обращённых к помощнику оскорблений.
+// Он не является смысловым анализом и может ошибаться.
+function hasDirectedInsult(text) {
+  const normalized = text.toLocaleLowerCase('ru-RU')
+    .replace(/ё/g, 'е')
+    .replace(/[!?.,:;]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const insultWords =
+    '(?:идиот(?:ка)?|дурак|дура|тупой|тупая|дебил|дебилка|бесполезный|бесполезная|ничтожество)';
+
+  const direct = new RegExp(
+    '(?:^|\\s)ты\\s+(?:(?:просто|совсем|вообще|такой|такая|полный|полная)\\s+){0,2}' +
+    insultWords +
+    '(?=\\s|$)',
+    'u'
+  );
+
+  const addressedByName = new RegExp(
+    '(?:^|\\s)(?:nial|nio|neo|ниал|нио|нео)\\s+' +
+    '(?:ты\\s+)?' +
+    insultWords +
+    '(?=\\s|$)',
+    'u'
+  );
+
+  return direct.test(normalized) || addressedByName.test(normalized);
+}
+
+const previousMoodFunction = mood;
+
+mood = function(value, temporary = false) {
+  clearTimeout(speakingTimer);
+
+  if (value === 'happy') {
+    previousMoodFunction('speaking', false);
+
+    speakingTimer = setTimeout(() => {
+      const isThinking =
+        busy && pendingAgent === state.active;
+
+      previousMoodFunction(
+        isThinking
+          ? 'thinking'
+          : document.querySelector('#input').value.trim()
+            ? 'attentive'
+            : 'idle',
+        false
+      );
+
+      applyCharacterAlert();
+    }, 5500);
+  } else {
+    previousMoodFunction(value, temporary);
+  }
+
+  applyCharacterAlert();
+};
+
+const previousOpenAgentFunction = openAgent;
+
+openAgent = function(id) {
+  clearTimeout(speakingTimer);
+  previousOpenAgentFunction(id);
+  applyCharacterAlert();
+};
+
+const previousRefreshNameFunction = refreshName;
+
+refreshName = function() {
+  previousRefreshNameFunction();
+  updateCharacterCaption();
+};
+
+// Capture: состояние выставляется до основного обработчика отправки.
+document.querySelector('#form').addEventListener('submit', () => {
+  const text = document.querySelector('#input').value.trim();
+  if (!text || busy) return;
+
+  characterAlerts[state.active] = hasDirectedInsult(text);
+  applyCharacterAlert();
+}, true);
+
+document.querySelector('#clearChat').addEventListener('click', () => {
+  // Основной обработчик очистки уже завершился.
+  if (!state.chats[state.active].length && !busy) {
+    characterAlerts[state.active] = false;
+    applyCharacterAlert();
+  }
+});
+
+const characterObserver = new MutationObserver(() => {
+  updateCharacterCaption();
+});
+
+characterObserver.observe(centralMascot, {
+  attributes: true,
+  attributeFilter: ['data-mood', 'data-alert']
+});
+
+refreshName();
+applyCharacterAlert();
+</script>
+<!-- nial-user-profile-v1 -->
+<style>
+#profileDialog{
+  width:min(480px,calc(100% - 28px));
+  padding:30px;
+}
+
+#profileDialog h2{
+  font-size:29px;
+}
+
+.profile-name-label{
+  display:block;
+  font-size:12px;
+  color:var(--muted);
+  margin:20px 0 8px;
+}
+
+#profileName{
+  width:100%;
+  padding:14px 16px;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:var(--paper);
+  color:var(--ink);
+  font:inherit;
+}
+
+#profileName:focus-visible{
+  outline:3px solid var(--focus,#b5a7f6);
+  outline-offset:3px;
+}
+
+.profile-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  margin-top:21px;
+}
+
+#profileError{
+  color:#b35269;
+  font-size:12px;
+  margin-top:12px;
+}
+
+.profile-edit-button{
+  background:var(--paper);
+  color:var(--ink);
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:8px 15px;
+  font-size:12px;
+}
+
+@media(max-width:740px){
+  #profileDialog{padding:25px}
+  .profile-edit-button{font-size:11px;padding:7px 12px}
+}
+</style>
+
+<dialog id="profileDialog" aria-labelledby="profileTitle">
+  <h2 id="profileTitle">Как тебя зовут?</h2>
+  <p id="profileDescription">Давай познакомимся. Это имя пользователя — имя помощника выбирается отдельно. Пока я знаю о тебе только то, что ты сам сообщишь.</p>
+
+  <form id="profileForm">
+    <label class="profile-name-label" for="profileName">Твоё имя</label>
+    <input
+      id="profileName"
+      type="text"
+      maxlength="60"
+      autocomplete="given-name"
+      placeholder="Введи имя"
+      required
+    >
+
+    <div id="profileError" role="alert" hidden></div>
+
+    <div class="profile-actions">
+      <button type="button" class="secondary" id="profileCancel" hidden>Отмена</button>
+      <button type="submit" class="primary">Продолжить</button>
+    </div>
+  </form>
+
+  <p style="font-size:11px">Имя сохраняется в этом браузере и передаётся GigaChat вместе с сообщениями. Его можно изменить кнопкой «Моё имя».</p>
+</dialog>
+
+<script>
+'use strict';
+
+const PROFILE_KEY = 'nial.ai.user-profile.v1';
+let userProfile = { name: '' };
+
+const originalSeedMemory =
+  'Меня зовут Никита. Предпочитаю русский язык и понятные короткие шаги. Не устанавливать программы без моего согласия.';
+
+// Удаляем только исходную стандартную заметку.
+// Реальные пользовательские записи и переписки не трогаем.
+if (state.memory.trim() === originalSeedMemory) {
+  state.memory = '';
+  persist();
+  updateHome();
+}
+
+try {
+  const raw = localStorage.getItem(PROFILE_KEY);
+  if (raw) {
+    const saved = JSON.parse(raw);
+    if (
+      saved &&
+      typeof saved.name === 'string' &&
+      saved.name.trim().length > 0 &&
+      saved.name.trim().length <= 60 &&
+      !/[\u0000-\u001f\u007f]/.test(saved.name)
+    ) {
+      userProfile.name = saved.name.trim();
+    }
+  }
+} catch {
+  // При недоступном или повреждённом профиле спросим имя заново.
+}
+
+const profileDialog = document.querySelector('#profileDialog');
+const profileInput = document.querySelector('#profileName');
+const profileError = document.querySelector('#profileError');
+const profileCancel = document.querySelector('#profileCancel');
+
+const profileButton = document.createElement('button');
+profileButton.type = 'button';
+profileButton.className = 'profile-edit-button';
+profileButton.textContent = 'Моё имя';
+document.querySelector('.top').append(profileButton);
+
+function applyUserProfile() {
+  const greeting = document.querySelector('#personalGreeting');
+  if (greeting) {
+    greeting.textContent = userProfile.name
+      ? 'Привет, ' + userProfile.name + '!'
+      : 'Привет!';
+  }
+}
+
+function openProfile() {
+  const firstVisit = !userProfile.name;
+
+  document.querySelector('#profileTitle').textContent =
+    firstVisit ? 'Как тебя зовут?' : 'Твоё имя';
+
+  document.querySelector('#profileDescription').textContent = firstVisit
+    ? 'Давай познакомимся. Это имя пользователя — имя помощника выбирается отдельно. Я узнаю тебя по мере общения.'
+    : 'Это имя пользователя. Переименование помощника его не меняет. Новое имя будет передаваться со следующего сообщения.';
+
+  profileInput.value = userProfile.name;
+  profileCancel.hidden = firstVisit;
+  profileError.hidden = true;
+
+  if (!profileDialog.open) profileDialog.showModal();
+
+  requestAnimationFrame(() => profileInput.focus());
+}
+
+profileButton.onclick = openProfile;
+profileCancel.onclick = () => profileDialog.close();
+
+profileDialog.addEventListener('cancel', event => {
+  if (!userProfile.name) event.preventDefault();
+});
+
+document.querySelector('#profileForm').addEventListener('submit', event => {
+  event.preventDefault();
+
+  const name = profileInput.value
+    .trim()
+    .replace(/\s+/g, ' ');
+
+  if (
+    !name ||
+    name.length > 60 ||
+    /[\u0000-\u001f\u007f]/.test(name)
+  ) {
+    profileError.hidden = false;
+    profileError.textContent = 'Введи имя длиной от 1 до 60 символов, без управляющих символов.';
+    return;
+  }
+
+  try {
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({ name }));
+  } catch {
+    profileError.hidden = false;
+    profileError.textContent =
+      'Не удалось сохранить имя в браузере. Проверь, разрешено ли сайту хранить данные. Пока профиль не сохранён, продолжить нельзя.';
+    return;
+  }
+
+  userProfile.name = name;
+  applyUserProfile();
+  profileDialog.close();
+});
+
+// Профиль передаётся отдельно от имени помощника и заметок памяти.
+const fetchBeforeUserProfile = window.fetch.bind(window);
+
+window.fetch = function(resource, options) {
+  const isChatRequest =
+    resource === '/chat' &&
+    options &&
+    String(options.method || 'GET').toUpperCase() === 'POST' &&
+    typeof options.body === 'string';
+
+  if (isChatRequest) {
+    let payload;
+
+    try {
+      payload = JSON.parse(options.body);
+    } catch {
+      return fetchBeforeUserProfile(resource, options);
+    }
+
+    if (!userProfile.name) {
+      return Promise.reject(new Error('Сначала укажи своё имя.'));
+    }
+
+    payload.userName = userProfile.name;
+
+    return fetchBeforeUserProfile(resource, {
+      ...options,
+      body: JSON.stringify(payload)
+    });
+  }
+
+  return fetchBeforeUserProfile(resource, options);
+};
+
+applyUserProfile();
+
+if (!userProfile.name) {
+  openProfile();
+}
+</script>
+<!-- nial-dark-mode-v1 -->
+<style>
+html[data-brightness="dark"]{
+  color-scheme:dark;
+}
+
+html[data-brightness="dark"][data-theme="purple"]{
+  --accent:#b9a8ff;
+  --accent-soft:#39304e;
+  --accent-faint:#30283f;
+  --surface:#25212e;
+  --surface-soft:#211d28;
+  --hero-bg:#342a43;
+  --hero-border:#493b59;
+  --theme-border:#403747;
+  --theme-muted:#b5aabd;
+  --theme-ink:#f1eaf7;
+  --theme-bg:#19161f;
+  --focus:#c7b5ff;
+  --accent-on:#251c36;
+  --orb-glow:#ae8bee44;
+}
+
+html[data-brightness="dark"][data-theme="burgundy"]{
+  --accent:#eea0b3;
+  --accent-soft:#4b2c37;
+  --accent-faint:#3b252e;
+  --surface:#2c2026;
+  --surface-soft:#251b20;
+  --hero-bg:#432832;
+  --hero-border:#5b3543;
+  --theme-border:#49303a;
+  --theme-muted:#c4a6b1;
+  --theme-ink:#f8eaf0;
+  --theme-bg:#1d151a;
+  --focus:#f1b0c0;
+  --accent-on:#381c27;
+  --orb-glow:#d7739544;
+}
+
+html[data-brightness="dark"][data-theme="green"]{
+  --accent:#a0d0ae;
+  --accent-soft:#293e32;
+  --accent-faint:#22332a;
+  --surface:#202b24;
+  --surface-soft:#1c251f;
+  --hero-bg:#293d30;
+  --hero-border:#3c5142;
+  --theme-border:#34473a;
+  --theme-muted:#a6bcac;
+  --theme-ink:#e9f4ec;
+  --theme-bg:#151d18;
+  --focus:#b4dfbf;
+  --accent-on:#183021;
+  --orb-glow:#82bc9744;
+}
+
+html[data-brightness="dark"][data-theme="orange"]{
+  --accent:#efb17f;
+  --accent-soft:#493427;
+  --accent-faint:#3b2b22;
+  --surface:#2e251f;
+  --surface-soft:#271f1a;
+  --hero-bg:#433024;
+  --hero-border:#5a4130;
+  --theme-border:#4c3b2e;
+  --theme-muted:#c4ad9b;
+  --theme-ink:#f8eee5;
+  --theme-bg:#1e1915;
+  --focus:#f5c39b;
+  --accent-on:#362315;
+  --orb-glow:#dc9d6a44;
+}
+
+html[data-brightness="dark"] .mark,
+html[data-brightness="dark"] .primary,
+html[data-brightness="dark"] .send{
+  color:var(--accent-on)!important;
+}
+
+html[data-brightness="dark"] .welcome .primary{
+  background:var(--surface)!important;
+  color:var(--theme-ink)!important;
+}
+
+html[data-brightness="dark"] .picture-card img{
+  background:var(--surface-soft)!important;
+}
+
+html[data-brightness="dark"] .notice{
+  background:#463225!important;
+  color:#f3c8a7!important;
+}
+
+html[data-brightness="dark"] .status.error,
+html[data-brightness="dark"] #pictureStatus.error,
+html[data-brightness="dark"] #profileError{
+  color:#ffabb7!important;
+}
+
+html[data-brightness="dark"] .auto-memory-item button{
+  color:#efacba!important;
+}
+
+html[data-brightness="dark"] textarea,
+html[data-brightness="dark"] input,
+html[data-brightness="dark"] select{
+  color:var(--theme-ink)!important;
+  caret-color:var(--accent);
+}
+
+html[data-brightness="dark"] textarea::placeholder,
+html[data-brightness="dark"] input::placeholder{
+  color:var(--theme-muted)!important;
+  opacity:.85;
+}
+
+html[data-brightness="dark"] .messages{
+  scrollbar-color:var(--theme-border) transparent;
+}
+
+html[data-brightness="dark"] dialog::backdrop{
+  background:#08060bb8;
+}
+
+html[data-brightness="dark"] .task:hover{
+  box-shadow:0 14px 30px #00000025!important;
+}
+
+.brightness-settings{
+  margin:20px 0 23px;
+}
+
+.brightness-settings h3{
+  margin-bottom:12px;
+  font-size:14px;
+  letter-spacing:0;
+}
+
+.brightness-options{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+
+.brightness-option{
+  border:1px solid var(--line);
+  border-radius:13px;
+  padding:9px 15px;
+  font-size:12px;
+  background:var(--paper);
+  color:var(--ink);
+}
+
+.brightness-option[aria-pressed="true"]{
+  background:var(--accent-soft);
+  color:var(--accent);
+  border-color:var(--accent);
+}
+
+html[data-brightness="dark"] .theme-option,
+html[data-brightness="dark"] .brightness-option{
+  background:var(--surface);
+  color:var(--theme-ink);
+}
+
+html[data-brightness="dark"] .brightness-option[aria-pressed="true"]{
+  background:var(--accent-soft);
+  color:var(--accent);
+}
+
+html[data-brightness="dark"] .character-caption{
+  color:var(--theme-muted);
+}
+</style>
+
+<script>
+'use strict';
+
+const BRIGHTNESS_KEY = 'nial.ai.brightness.v1';
+const systemDarkQuery = matchMedia('(prefers-color-scheme: dark)');
+let brightnessChoice = 'system';
+
+try {
+  const stored = localStorage.getItem(BRIGHTNESS_KEY);
+  if (['light', 'dark', 'system'].includes(stored)) {
+    brightnessChoice = stored;
+  }
+} catch {
+  // В текущей вкладке переключение всё равно доступно.
+}
+
+const brightnessSettings = document.createElement('section');
+brightnessSettings.className = 'brightness-settings';
+
+const brightnessHeading = document.createElement('h3');
+brightnessHeading.textContent = 'Яркость';
+
+const brightnessOptions = document.createElement('div');
+brightnessOptions.className = 'brightness-options';
+
+for (const [value, label] of [
+  ['light', 'Светлая'],
+  ['dark', 'Тёмная'],
+  ['system', 'Как в системе']
+]) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'brightness-option';
+  button.dataset.brightnessChoice = value;
+  button.textContent = label;
+  button.onclick = () => setBrightness(value, true);
+  brightnessOptions.append(button);
+}
+
+brightnessSettings.append(brightnessHeading, brightnessOptions);
+
+const themeOptions = document.querySelector('#themeDialog .theme-options');
+themeOptions.before(brightnessSettings);
+
+function updateBrowserThemeColor() {
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) return;
+
+  const color = getComputedStyle(document.documentElement)
+    .getPropertyValue('--theme-bg').trim();
+
+  if (color) meta.content = color;
+}
+
+function setBrightness(value, save = false) {
+  if (!['light', 'dark', 'system'].includes(value)) return;
+  brightnessChoice = value;
+
+  const resolved = value === 'system'
+    ? (systemDarkQuery.matches ? 'dark' : 'light')
+    : value;
+
+  document.documentElement.dataset.brightness = resolved;
+  document.documentElement.style.colorScheme = resolved;
+
+  document.querySelectorAll('[data-brightness-choice]').forEach(button => {
+    button.setAttribute(
+      'aria-pressed',
+      String(button.dataset.brightnessChoice === value)
+    );
+  });
+
+  updateBrowserThemeColor();
+
+  if (save) {
+    try {
+      localStorage.setItem(BRIGHTNESS_KEY, value);
+    } catch {
+      const notice = document.querySelector('#notice');
+      notice.hidden = false;
+      notice.textContent =
+        'Режим применён, но сохранить выбор в браузере не удалось.';
+    }
+  }
+}
+
+systemDarkQuery.addEventListener('change', () => {
+  if (brightnessChoice === 'system') {
+    setBrightness('system');
+  }
+});
+
+// После смены окраса обновляем цвет панели браузера.
+const brightnessPaletteObserver = new MutationObserver(mutations => {
+  if (mutations.some(change =>
+    change.attributeName === 'data-theme'
+  )) {
+    updateBrowserThemeColor();
+  }
+});
+
+brightnessPaletteObserver.observe(document.documentElement, {
+  attributes: true,
+  attributeFilter: ['data-theme']
+});
+
+setBrightness(brightnessChoice);
+</script>
+</body>
+</html>
